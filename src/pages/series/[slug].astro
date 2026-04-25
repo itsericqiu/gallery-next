@@ -1,0 +1,26 @@
+---
+import PhotoGrid from '@/components/PhotoGrid.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionsByType, type Collection } from '@/data/collections';
+import { collectionSlugSegment, photosForCollection } from '@/lib/collections';
+
+export function getStaticPaths() {
+  return collectionsByType('series').map((collection) => ({
+    params: { slug: collectionSlugSegment(collection) },
+    props: { collection },
+  }));
+}
+
+const { collection } = Astro.props as { collection: Collection };
+const photos = photosForCollection(collection);
+---
+
+<BaseLayout title={collection.title} description={collection.description} path={collection.slug}>
+  <section class="hero hero--series">
+    <p class="eyebrow">Series</p>
+    <h1>{collection.title}</h1>
+    <p class="lede">{collection.description}</p>
+  </section>
+
+  <PhotoGrid photos={photos} />
+</BaseLayout>

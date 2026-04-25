@@ -1,0 +1,40 @@
+---
+import PhotoGrid from '@/components/PhotoGrid.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionsByType, getCollection } from '@/data/collections';
+import { photosForCollection } from '@/lib/collections';
+import { withBase } from '@/lib/urls';
+
+const selected = getCollection('selected');
+const selectedPhotos = photosForCollection(selected);
+const places = collectionsByType('place');
+const series = collectionsByType('series');
+---
+
+<BaseLayout title="Photos by Eric Qiu" description={selected.seoDescription ?? selected.description} path="/">
+  <section class="hero hero--home">
+    <p class="eyebrow">Selected photographs</p>
+    <h1>Places, weather, city light, and the small things that stayed.</h1>
+    <p class="lede">
+      A personal photo archive by <a href="https://ericqiu.dev" rel="me">Eric Qiu</a>, edited slowly by place,
+      memory, and whatever kept asking for another look.
+    </p>
+  </section>
+
+  <PhotoGrid photos={selectedPhotos} />
+
+  <section class="index-panels" aria-label="Browse collections">
+    <a href={withBase('/places/')}>
+      <span>Places</span>
+      <strong>{places.length} collections</strong>
+    </a>
+    <a href={withBase('/series/')}>
+      <span>Series</span>
+      <strong>{series.length} collections</strong>
+    </a>
+    <a href={withBase('/archive/')}>
+      <span>Archive</span>
+      <strong>{getCollection('archive').photoIds.length} photos</strong>
+    </a>
+  </section>
+</BaseLayout>

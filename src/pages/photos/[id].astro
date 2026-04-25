@@ -1,0 +1,56 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { photos, type Photo } from '@/data/photos';
+import { photoImage, photoPlaceholder } from '@/lib/media';
+import { relatedCollections } from '@/lib/collections';
+import { withBase } from '@/lib/urls';
+
+export function getStaticPaths() {
+  return photos.map((photo) => ({
+    params: { id: photo.id },
+    props: { photo },
+  }));
+}
+
+const { photo } = Astro.props as { photo: Photo };
+const collections = relatedCollections(photo).filter((collection) => collection.type !== 'archive');
+const title = photo.title ?? `Photo ${photo.id}`;
+const description = photo.caption ?? (photo.place ? `A photograph from ${photo.place} by Eric Qiu.` : 'A photograph by Eric Qiu.');
+const image = await photoImage(photo, 'detail');
+const placeholder = await photoPlaceholder(photo);
+---
+
+<BaseLayout title={title} description={description} path={`/photos/${photo.id}/`} image={image.src}>
+  <article class="photo-page">
+    <figure>
+      <img
+        src={image.src}
+        srcset={image.srcset}
+        alt={photo.alt}
+        width={image.width}
+        height={image.height}
+        sizes="(max-width: 860px) 100vw, calc(100vw - 420px)"
+        style={`--placeholder: url('${placeholder}')`}
+        fetchpriority="high"
+        decoding="async"
+      />
+      <figcaption>
+        <span>{photo.place ?? 'Photograph'}</span>
+        <span>{photo.id}</span>
+      </figcaption>
+    </figure>
+
+    <aside class="photo-meta" aria-label="Photo metadata">
+      <a class="back-link" href={withBase('/archive/')}>All photographs</a>
+      <h1>{title}</h1>
+      <p>{description}</p>
+      {collections.length > 0 && (
+        <ul>
+          {collections.map((collection) => (
+            <li><a href={withBase(collection.slug)}>{collection.title}</a></li>
+          ))}
+        </ul>
+      )}
+    </aside>
+  </article>
+</BaseLayout>

@@ -1,0 +1,34 @@
+---
+import Seo from '@/components/Seo.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
+import { withBase } from '@/lib/urls';
+import '@/styles/global.css';
+
+type Props = {
+  title: string;
+  description: string;
+  path?: string;
+  image?: string;
+};
+
+const { title, description, path, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f0ea" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <Seo title={title} description={description} path={path} image={image} />
+  </head>
+  <body>
+    <SiteHeader />
+    <main>
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

@@ -1,0 +1,31 @@
+---
+import type { Collection } from '@/data/collections';
+import { getPhoto } from '@/data/photos';
+import { photoImage } from '@/lib/media';
+import { withBase } from '@/lib/urls';
+
+type Props = {
+  collection: Collection;
+};
+
+const { collection } = Astro.props;
+const cover = getPhoto(collection.coverPhotoId);
+const coverImage = await photoImage(cover, 'grid');
+---
+
+<a class="collection-card" href={withBase(collection.slug)}>
+  <img
+    src={coverImage.src}
+    srcset={coverImage.srcset}
+    alt={`Open ${collection.title}`}
+    width={coverImage.width}
+    height={coverImage.height}
+    sizes="(max-width: 860px) 100vw, 33vw"
+    loading="lazy"
+    decoding="async"
+  />
+  <span class="collection-card__body">
+    <span class="collection-card__title">{collection.title}</span>
+    <span class="collection-card__meta">{collection.photoIds.length} photos</span>
+  </span>
+</a>

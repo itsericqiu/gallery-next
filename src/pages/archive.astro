@@ -1,0 +1,19 @@
+---
+import PhotoGrid from '@/components/PhotoGrid.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from '@/data/collections';
+import { photosForCollection } from '@/lib/collections';
+
+const archive = getCollection('archive');
+const photos = photosForCollection(archive);
+---
+
+<BaseLayout title="Archive" description={archive.description} path="/archive/">
+  <section class="hero hero--compact">
+    <p class="eyebrow">Archive</p>
+    <h1>All published photographs.</h1>
+    <p class="lede">A denser view for browsing the full public set without the tighter edit of the homepage.</p>
+  </section>
+
+  <PhotoGrid photos={photos} variant="archive" />
+</BaseLayout>

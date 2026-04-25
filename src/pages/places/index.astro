@@ -1,0 +1,19 @@
+---
+import CollectionCard from '@/components/CollectionCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionsByType } from '@/data/collections';
+
+const places = collectionsByType('place');
+---
+
+<BaseLayout title="Places" description="Place-based photo collections by Eric Qiu." path="/places/">
+  <section class="hero">
+    <p class="eyebrow">Places</p>
+    <h1>Notes from specific places.</h1>
+    <p class="lede">Location-based collections, kept loose enough to grow as older trips and newer work are added.</p>
+  </section>
+
+  <div class="collection-grid">
+    {places.map((collection) => <CollectionCard collection={collection} />)}
+  </div>
+</BaseLayout>

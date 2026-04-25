@@ -1,0 +1,19 @@
+---
+import CollectionCard from '@/components/CollectionCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionsByType } from '@/data/collections';
+
+const series = collectionsByType('series');
+---
+
+<BaseLayout title="Series" description="Thematic photo series by Eric Qiu." path="/series/">
+  <section class="hero">
+    <p class="eyebrow">Series</p>
+    <h1>Recurring subjects, gathered across places.</h1>
+    <p class="lede">Small edits built around atmosphere, form, and subject rather than itinerary.</p>
+  </section>
+
+  <div class="collection-grid collection-grid--series">
+    {series.map((collection) => <CollectionCard collection={collection} />)}
+  </div>
+</BaseLayout>

@@ -1,0 +1,17 @@
+---
+import { withBase } from '@/lib/urls';
+---
+
+<header class="site-header">
+  <a class="brand" href={withBase('/')} aria-label="Eric Qiu photo archive">
+    <span>Photos</span>
+    <em>Eric Qiu</em>
+  </a>
+  <nav class="nav" aria-label="Primary navigation">
+    <a href={withBase('/places/')}>Places</a>
+    <a href={withBase('/series/')}>Series</a>
+    <a href={withBase('/archive/')}>Archive</a>
+    <a href={withBase('/about/')}>About</a>
+    <a href="https://ericqiu.dev" rel="me">ericqiu.dev</a>
+  </nav>
+</header>

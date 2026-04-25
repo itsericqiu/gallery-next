@@ -1,0 +1,43 @@
+---
+import type { Photo } from '@/data/photos';
+import { aspectRatio, photoImage, photoPlaceholder } from '@/lib/media';
+import { withBase } from '@/lib/urls';
+
+type Props = {
+  photos: Photo[];
+  variant?: 'editorial' | 'archive';
+};
+
+const { photos, variant = 'editorial' } = Astro.props;
+const renderedPhotos = await Promise.all(
+  photos.map(async (photo) => ({
+    image: await photoImage(photo, 'grid'),
+    placeholder: await photoPlaceholder(photo),
+    photo,
+  })),
+);
+---
+
+<div class:list={['photo-grid', `photo-grid--${variant}`]}>
+  {renderedPhotos.map(({ image, photo, placeholder }, index) => (
+    <a
+      class="photo-tile"
+      href={withBase(`/photos/${photo.id}/`)}
+      style={`--ratio: ${aspectRatio(photo)}; --placeholder: url('${placeholder}')`}
+    >
+      <img
+        src={image.src}
+        srcset={image.srcset}
+        alt={photo.alt}
+        width={image.width}
+        height={image.height}
+        sizes={variant === 'archive'
+          ? '(max-width: 520px) 100vw, (max-width: 860px) 50vw, 25vw'
+          : '(max-width: 520px) 100vw, (max-width: 860px) 50vw, 33vw'}
+        loading={index < 2 ? 'eager' : 'lazy'}
+        fetchpriority={index < 2 ? 'high' : 'auto'}
+        decoding="async"
+      />
+    </a>
+  ))}
+</div>
