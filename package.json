@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "add-photo": "node scripts/add-photo.mjs",
+    "resize-all": "find src/assets/photos -name '*.jpg' -exec sips -Z 4000 {} \\;"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
