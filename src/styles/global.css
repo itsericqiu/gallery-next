@@ -146,7 +146,7 @@ h1 {
 }
 
 .lede {
-  align-self: end;
+  align-self: start;
   color: var(--muted);
   font-size: clamp(15px, 1.25vw, 17px);
   line-height: 1.7;
@@ -382,13 +382,14 @@ figcaption {
 }
 
 @media (max-width: 520px) {
-  .photo-grid {
-    column-gap: 12px;
-  }
-
   .photo-grid,
   .photo-grid--archive {
-    column-count: 1;
+    column-count: 2;
+    column-gap: 8px;
+  }
+
+  .photo-tile {
+    margin-bottom: 8px;
   }
 
   .site-footer {

@@ -32,8 +32,8 @@ const renderedPhotos = await Promise.all(
         width={image.width}
         height={image.height}
         sizes={variant === 'archive'
-          ? '(max-width: 520px) 100vw, (max-width: 860px) 50vw, 25vw'
-          : '(max-width: 520px) 100vw, (max-width: 860px) 50vw, 33vw'}
+          ? '(max-width: 520px) 50vw, (max-width: 860px) 50vw, 25vw'
+          : '(max-width: 520px) 50vw, (max-width: 860px) 50vw, 33vw'}
         loading={index < 2 ? 'eager' : 'lazy'}
         fetchpriority={index < 2 ? 'high' : 'auto'}
         decoding="async"
