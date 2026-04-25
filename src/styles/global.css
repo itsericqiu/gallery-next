@@ -155,8 +155,10 @@ h1 {
 }
 
 .photo-grid {
-  column-count: 3;
-  column-gap: clamp(10px, 1.8vw, 24px);
+  align-items: start;
+  display: grid;
+  gap: clamp(10px, 1.8vw, 24px);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .photo-tile {
@@ -165,14 +167,12 @@ h1 {
     var(--placeholder) center / cover,
     var(--faint);
   display: block;
-  margin-bottom: clamp(10px, 1.8vw, 24px);
   overflow: hidden;
   text-decoration: none;
-  break-inside: avoid;
 }
 
 .photo-grid--archive {
-  column-count: 4;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .photo-tile img {
@@ -360,15 +360,9 @@ figcaption {
     font-size: clamp(42px, 15vw, 76px);
   }
 
-  .photo-tile,
-  .photo-tile:nth-child(n),
-  .photo-grid--archive .photo-tile:nth-child(n) {
-    grid-column: auto;
-  }
-
   .photo-grid,
   .photo-grid--archive {
-    column-count: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .collection-grid,
@@ -384,12 +378,7 @@ figcaption {
 @media (max-width: 520px) {
   .photo-grid,
   .photo-grid--archive {
-    column-count: 2;
-    column-gap: 8px;
-  }
-
-  .photo-tile {
-    margin-bottom: 8px;
+    gap: 8px;
   }
 
   .site-footer {
