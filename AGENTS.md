@@ -46,6 +46,7 @@ The OG image (`public/og-image.png`) is generated from `scripts/generate-og-imag
   - Left border accent line
 
 Run `node scripts/generate-og-image.mjs` to regenerate after changes.
+
 - `scripts/generate-icons.mjs`: generates favicon, Apple, and manifest icons from SVG sources.
 
 ## Before Editing
@@ -92,12 +93,26 @@ Requirements to preserve:
 - Keep responsive counts aligned with CSS: 2 columns at `<=860px`, 3 editorial desktop columns, 4 archive desktop columns.
 - If JS fails, the grid must remain visible and usable.
 
-## Styling Guidance
+## Lightbox Functionality
 
-- Preserve the existing visual language unless explicitly asked to redesign.
-- Avoid adding external font dependencies.
-- Keep CSS changes minimal and scoped.
-- Test responsive behavior rather than only desktop.
+`PhotoGrid.astro` includes a collection lightbox with:
+- Keyboard navigation (← → arrow keys)
+- Touch swipe navigation (mobile)
+- Desktop hover pre-load for snappier navigation
+- Prefetch of ±3 adjacent photos for skipping behavior
+- Focus management and backdrop click to close
+
+Photo detail pages (`src/pages/photos/[id].astro`) have their own lightbox with:
+- Backdrop click to close
+- Consistent styling with collection lightbox
+
+Photo page desktop layout:
+- Photo column: max-width 700px, right-aligned  
+-
+- Meta column: fixed 240-320px, left edge aligns with photo right edge plus 48px gap
+- Mobile: single column stacked
+
+Lightbox buttons use `touch-action: manipulation;` to prevent mobile double-tap zoom interference.
 
 ## Icon Contract
 

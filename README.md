@@ -211,7 +211,23 @@ The project has gone through several layout iterations:
 - CSS column masonry, then CSS Grid for consistency
 - final current approach: JS-packed masonry with CSS Grid fallback for cross-browser consistency
 
-The current implementation favors consistent end results across Safari, Chrome, Firefox, desktop, and mobile over relying on browser-specific CSS column balancing.
+## Photo Pages and Lightbox Navigation
+
+Photo pages use a two-column layout on desktop:
+- **Photo column**: right-aligned with max-width of 700px
+- **Metadata column**: fixed width of 240-320px, left-aligned with photo right edge
+- **Mobile**: stacked single-column layout
+
+Lightbox functionality includes:
+- **Collection lightbox**: opens from any photo tile with keyboard (← →), swipe (mobile), and mouse navigation
+- **Photo page lightbox**: full-screen view of individual photos, backdrop click to close
+- **Performance optimizations**: 
+  - Async decoding (`decoding="async"`) for non-blocking image loading
+  - Preload of ±3 adjacent photos for faster skipping navigation
+  - Desktop hover preload for navigation arrows
+  - `touch-action: manipulation` on mobile to prevent double-tap zoom interference
+
+Both lightboxes share consistent styling (dark backdrop, subtle controls) and preserve focus management for accessibility.
 
 ## License
 
