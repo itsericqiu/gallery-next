@@ -212,3 +212,9 @@ The project has gone through several layout iterations:
 - final current approach: JS-packed masonry with CSS Grid fallback for cross-browser consistency
 
 The current implementation favors consistent end results across Safari, Chrome, Firefox, desktop, and mobile over relying on browser-specific CSS column balancing.
+
+## License
+
+Code in this repository is licensed under the MIT License. See `LICENSE`.
+
+All photographs, captions, written content, visual identity assets, icon source files, generated icon files, and branding are copyright Eric Qiu. All rights reserved. They are not licensed for reuse without explicit permission. See `CONTENT-LICENSE.md`.

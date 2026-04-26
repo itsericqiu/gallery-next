@@ -117,6 +117,12 @@ Pushes to `main` deploy through `.github/workflows/astro.yml` to GitHub Pages. T
 
 Do not change deployment settings unless the target domain or Pages setup is intentionally changing.
 
+## Licensing
+
+The MIT License applies only to software source code. Photographs, captions, written content, visual identity assets, icon source files, generated icon files, and branding are all rights reserved under `CONTENT-LICENSE.md`.
+
+Do not treat `src/assets/photos`, icon files, copy, captions, or branding as reusable open-source assets.
+
 ## Common Mistakes
 
 - Adding photos to `public/photos` instead of `src/assets/photos`.
