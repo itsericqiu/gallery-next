@@ -1,6 +1,6 @@
 ---
 import type { Photo } from '@/data/photos';
-import { aspectRatio, photoImage, photoPlaceholder } from '@/lib/media';
+import { aspectRatio, photoImage, photoPlaceholder, gridSizes } from '@/lib/media';
 import { withBase } from '@/lib/urls';
 
 type Props = {
@@ -32,11 +32,9 @@ const renderedPhotos = await Promise.all(
         alt={photo.alt}
         width={image.width}
         height={image.height}
-        sizes={variant === 'archive'
-          ? '(max-width: 520px) 50vw, (max-width: 860px) 50vw, 25vw'
-          : '(max-width: 520px) 50vw, (max-width: 860px) 50vw, 33vw'}
+        sizes={gridSizes(variant)}
         loading={index < 2 ? 'eager' : 'lazy'}
-        fetchpriority={index < 2 ? 'high' : 'auto'}
+        fetchpriority={index === 0 ? 'high' : 'auto'}
         decoding="async"
       />
     </a>
@@ -47,7 +45,9 @@ const renderedPhotos = await Promise.all(
   type PhotoTile = HTMLElement & { dataset: DOMStringMap };
 
   function columnCount(variant: string | undefined): number {
-    if (window.innerWidth <= 860) return 2;
+    const w = window.innerWidth;
+    if (w <= 720) return 2;
+    if (variant === 'archive' && w <= 960) return 3;
     return variant === 'archive' ? 4 : 3;
   }
 

@@ -4,8 +4,8 @@
   --paper: #fbf9f4;
   --ink: #24231f;
   --muted: #716d64;
-  --soft: #9a9387;
-  --faint: #d9d2c7;
+  --soft: #6a655c;
+  --faint: #cdc4b6;
   --line: rgba(36, 35, 31, 0.12);
   --accent: #5f5548;
   --link-decoration: rgba(36, 35, 31, 0.28);
@@ -23,8 +23,8 @@
   --bg: #121110;
   --paper: #1c1b19;
   --ink: #e8e4dc;
-  --muted: #8a847a;
-  --soft: #5a5550;
+  --muted: #9a948a;
+  --soft: #9a948a;
   --faint: #2a2825;
   --line: rgba(232, 228, 220, 0.12);
   --accent: #ceba98;
@@ -38,8 +38,8 @@
     --bg: #121110;
     --paper: #1c1b19;
     --ink: #e8e4dc;
-    --muted: #8a847a;
-    --soft: #5a5550;
+    --muted: #9a948a;
+    --soft: #9a948a;
     --faint: #2a2825;
     --line: rgba(232, 228, 220, 0.12);
     --accent: #ceba98;
@@ -76,7 +76,7 @@ a {
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   background-position: 0% 100%;
-  background-size: 0% 1px;
+  background-size: 0% 2px;
   transition:
     color 0.2s ease,
     background-size 0.25s ease;
@@ -85,7 +85,7 @@ a {
 a:hover {
   color: var(--accent);
   text-decoration: none;
-  background-size: 100% 1px;
+  background-size: 100% 2px;
 }
 
 a:focus-visible {
@@ -107,54 +107,6 @@ main,
   padding-inline: var(--pad);
 }
 
-.site-header {
-  align-items: center;
-  display: flex;
-  gap: 24px;
-  justify-content: space-between;
-  padding-block: 22px;
-  flex-wrap: wrap;
-}
-}
-
-.brand {
-  align-items: baseline;
-  display: inline-flex;
-  gap: 10px;
-  font-family: var(--serif);
-  font-size: clamp(16px, 2.5vw, 19px);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-}
-
-.brand em {
-  color: var(--soft);
-  font-family: var(--sans);
-  font-size: clamp(10px, 1.2vw, 11px);
-  font-style: normal;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.nav {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: flex-end;
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.nav a {
-  text-decoration: none;
-}
-
 .hero {
   border-top: 1px solid var(--line);
   display: grid;
@@ -170,6 +122,15 @@ main,
 .hero--compact {
   min-height: auto;
   padding-bottom: 40px;
+}
+
+.hero--collection {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.hero--collection .lede {
+  margin-top: 16px;
+  max-width: 50rem;
 }
 
 .eyebrow {
@@ -225,6 +186,12 @@ h1 {
 
 .photo-grid--archive {
   grid-template-columns: repeat(4, 1fr);
+}
+
+@media (min-width: 720px) and (max-width: 960px) {
+  .photo-grid--archive {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .photo-col {
@@ -331,12 +298,12 @@ figcaption,
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   background-position: 0% 100%;
-  background-size: 0% 1px;
+  background-size: 0% 2px;
   transition: background-size 0.25s ease;
 }
 
 .collection-card:hover .collection-card__title {
-  background-size: 100% 1px;
+  background-size: 100% 2px;
 }
 
 .prose-page {
@@ -415,16 +382,21 @@ figcaption,
   width: 100%;
 }
 
+/*
+ * Lightbox controls use fixed light treatment (not theme tokens) because the
+ * backdrop is fixed dark in both themes — theme-following would render the
+ * controls invisible in dark mode.
+ */
 .photo-lightbox__close {
-  background: var(--bg);
-  border: 1px solid rgba(243, 240, 234, 0.34);
-  color: var(--ink);
+  background: rgba(243, 240, 234, 0.95);
+  border: 1px solid rgba(36, 35, 31, 0.2);
+  color: #24231f;
   cursor: pointer;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   padding: 10px 12px;
-  position: fixed;
+  position: absolute;
   right: 18px;
   text-transform: uppercase;
   top: 18px;
@@ -432,8 +404,45 @@ figcaption,
 }
 
 .photo-lightbox__close:focus-visible {
-  outline: 1px solid var(--bg);
+  outline: 2px solid #f3f0ea;
   outline-offset: 4px;
+}
+
+.photo-lightbox__nav {
+  align-items: center;
+  background: rgba(243, 240, 234, 0.95);
+  border: 1px solid rgba(36, 35, 31, 0.2);
+  color: #24231f;
+  display: inline-flex;
+  font-family: var(--mono);
+  font-size: 18px;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px;
+  position: absolute;
+  text-decoration: none;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background 0.18s ease;
+  z-index: 2;
+}
+
+.photo-lightbox__nav:hover {
+  background: #ffffff;
+}
+
+.photo-lightbox__nav:focus-visible {
+  outline: 2px solid #f3f0ea;
+  outline-offset: 4px;
+}
+
+.photo-lightbox__nav--prev {
+  left: 18px;
+}
+
+.photo-lightbox__nav--next {
+  right: 18px;
 }
 
 figcaption {
@@ -468,34 +477,7 @@ figcaption {
   padding: 18px 0 0;
 }
 
-.site-footer {
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 13px;
-  gap: 16px;
-  justify-content: space-between;
-  margin-top: clamp(64px, 10vw, 140px);
-  padding-block: 28px;
-}
-
-.site-footer p {
-  margin: 0;
-}
-
-@media (max-width: 860px) {
-  .site-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .nav {
-    justify-content: flex-start;
-    font-size: 10px;
-    gap: 12px;
-  }
-
+@media (max-width: 720px) {
   .hero,
   .photo-page {
     grid-template-columns: 1fr;
@@ -516,17 +498,16 @@ figcaption {
     grid-template-columns: 1fr;
   }
 
+  .collection-card img {
+    aspect-ratio: var(--mobile-ratio, 4 / 3);
+  }
+
   .photo-meta {
     position: static;
   }
 }
 
 @media (max-width: 520px) {
-  .nav {
-    font-size: 10px;
-    gap: 10px;
-  }
-
   h1 {
     font-size: clamp(20px, 7vw, 36px);
   }
@@ -534,10 +515,6 @@ figcaption {
   .photo-grid,
   .photo-col {
     gap: 8px;
-  }
-
-  .site-footer {
-    display: grid;
   }
 }
 
@@ -550,4 +527,28 @@ figcaption {
   .photo-tile:focus-visible img {
     transform: none;
   }
+}
+
+.skip-link {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  left: 50%;
+  padding: 12px 16px;
+  position: absolute;
+  text-decoration: none;
+  text-transform: uppercase;
+  top: 12px;
+  transform: translate(-50%, calc(-100% - 24px));
+  transition: transform 0.18s ease;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  transform: translate(-50%, 0);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

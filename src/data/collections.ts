@@ -299,6 +299,29 @@ export const collections: Collection[] = [
   },
 ];
 
+function validateCollections() {
+  const validPhotoIds = new Set(allPhotoIds);
+  const missingReferences: string[] = [];
+
+  for (const collection of collections) {
+    if (!validPhotoIds.has(collection.coverPhotoId)) {
+      missingReferences.push(`${collection.id}.coverPhotoId: ${collection.coverPhotoId}`);
+    }
+
+    for (const photoId of collection.photoIds) {
+      if (!validPhotoIds.has(photoId)) {
+        missingReferences.push(`${collection.id}.photoIds: ${photoId}`);
+      }
+    }
+  }
+
+  if (missingReferences.length > 0) {
+    throw new Error(`Unknown photo IDs in collections:\n${missingReferences.join('\n')}`);
+  }
+}
+
+validateCollections();
+
 export function getCollection(id: string): Collection {
   const collection = collections.find((candidate) => candidate.id === id);
   if (!collection) {

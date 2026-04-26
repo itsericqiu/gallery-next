@@ -1,7 +1,7 @@
 ---
 import type { Collection } from '@/data/collections';
 import { getPhoto } from '@/data/photos';
-import { photoImage } from '@/lib/media';
+import { aspectRatio, photoImage, collectionCardSizes } from '@/lib/media';
 import { withBase } from '@/lib/urls';
 
 type Props = {
@@ -13,14 +13,14 @@ const cover = getPhoto(collection.coverPhotoId);
 const coverImage = await photoImage(cover, 'grid');
 ---
 
-<a class="collection-card" href={withBase(collection.slug)}>
+<a class="collection-card" href={withBase(collection.slug)} style={`--mobile-ratio: ${aspectRatio(cover)}`}>
   <img
     src={coverImage.src}
     srcset={coverImage.srcset}
     alt={`Open ${collection.title}`}
     width={coverImage.width}
     height={coverImage.height}
-    sizes="(max-width: 860px) 100vw, 33vw"
+    sizes={collectionCardSizes()}
     loading="lazy"
     decoding="async"
   />

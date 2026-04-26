@@ -70,3 +70,17 @@ async function getPhotoImage(
     ...options,
   });
 }
+
+export function gridSizes(variant: 'editorial' | 'archive'): string {
+  return variant === 'archive'
+    ? '(max-width: 720px) 50vw, (max-width: 960px) 33vw, 25vw'
+    : '(max-width: 720px) 50vw, 33vw';
+}
+
+export function detailSizes(): string {
+  return '(max-width: 720px) 100vw, calc(100vw - 420px)';
+}
+
+export function collectionCardSizes(): string {
+  return '(max-width: 720px) 100vw, 33vw';
+}

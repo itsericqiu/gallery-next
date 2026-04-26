@@ -7,52 +7,129 @@ import { withBase } from '@/lib/urls';
     <span>Photos</span>
     <em>Eric Qiu</em>
   </a>
-  <nav class="nav" aria-label="Primary navigation">
+  <button class="nav-toggle" type="button" aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">Menu</button>
+  <nav class="nav" id="primary-nav" aria-label="Primary navigation">
+    <button class="nav-close" type="button" aria-label="Close menu">Close</button>
     <a href={withBase('/places/')}>Places</a>
     <a href={withBase('/series/')}>Series</a>
     <a href={withBase('/archive/')}>Archive</a>
     <a href={withBase('/about/')}>About</a>
-    <a href="https://ericqiu.dev" rel="me">ericqiu.dev</a>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-      <svg class="icon-sun" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      <svg class="icon-moon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
+    <span class="theme-toggle-cluster">
+      <span class="theme-toggle-label">Theme</span>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" aria-pressed="false">
+        <svg class="icon-sun" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </span>
   </nav>
 </header>
 
 <script is:inline>
-(function() {
-  var btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-
-  function getTheme() {
-    var explicit = document.documentElement.getAttribute('data-theme');
-    if (explicit === 'dark' || explicit === 'light') return explicit;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-
-  function updateIcons() {
-    var isDark = getTheme() === 'dark';
-    btn.querySelector('.icon-sun').style.display = isDark ? 'block' : 'none';
-    btn.querySelector('.icon-moon').style.display = isDark ? 'none' : 'block';
-  }
-
-  updateIcons();
-
-  btn.addEventListener('click', function() {
-    var next = getTheme() === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    updateIcons();
-  });
-
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-    if (!localStorage.getItem('theme')) {
-      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-      updateIcons();
+  (function() {
+    var btn = document.getElementById('theme-toggle');
+    if (btn && window.__theme) {
+      btn.addEventListener('click', function() { window.__theme.toggle(); });
+      window.__theme.subscribe(function(theme) {
+        btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+      });
     }
-  });
-})();
+
+    // Mobile nav overlay
+    var header = document.querySelector('.site-header');
+    var toggle = document.querySelector('.nav-toggle');
+    var closeBtn = document.querySelector('.nav-close');
+    var nav = document.getElementById('primary-nav');
+    if (!header || !toggle || !closeBtn || !nav) return;
+
+    var previousOverflow = '';
+
+    function getFocusable() {
+      return Array.prototype.slice.call(
+        nav.querySelectorAll('a[href], button:not([disabled])')
+      );
+    }
+
+    function openMenu() {
+      header.setAttribute('data-open', 'true');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close menu');
+      previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      var focusables = getFocusable();
+      var firstLink = nav.querySelector('a[href]');
+      if (firstLink) {
+        firstLink.focus();
+      } else if (focusables.length) {
+        focusables[0].focus();
+      }
+    }
+
+    function closeMenu(returnFocus) {
+      header.removeAttribute('data-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open menu');
+      document.body.style.overflow = previousOverflow || '';
+      if (returnFocus) {
+        toggle.focus();
+      }
+    }
+
+    toggle.addEventListener('click', function() {
+      if (header.getAttribute('data-open') === 'true') {
+        closeMenu(true);
+      } else {
+        openMenu();
+      }
+    });
+
+    closeBtn.addEventListener('click', function() {
+      closeMenu(true);
+    });
+
+    // Clicking a link inside the overlay: close, but let navigation happen.
+    nav.addEventListener('click', function(e) {
+      var target = e.target;
+      while (target && target !== nav) {
+        if (target.tagName === 'A') {
+          if (header.getAttribute('data-open') === 'true') {
+            closeMenu(false);
+          }
+          break;
+        }
+        target = target.parentNode;
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (header.getAttribute('data-open') !== 'true') return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMenu(true);
+        return;
+      }
+      if (e.key === 'Tab') {
+        var focusables = getFocusable();
+        if (!focusables.length) return;
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    var mq = window.matchMedia('(min-width: 640px)');
+    var onChange = function(e) {
+      if (e.matches && header.getAttribute('data-open') === 'true') {
+        closeMenu(false);
+      }
+    };
+    mq.addEventListener('change', onChange);
+  })();
 </script>
 
 <style>
@@ -62,7 +139,6 @@ import { withBase } from '@/lib/urls';
     gap: 24px;
     justify-content: space-between;
     padding-block: 22px;
-    flex-wrap: wrap;
   }
 
   .brand {
@@ -88,27 +164,52 @@ import { withBase } from '@/lib/urls';
 
   .nav {
     align-items: center;
+    color: var(--muted);
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    gap: 14px;
     justify-content: flex-end;
-    font-size: 11px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
   }
 
   .nav a {
     text-decoration: none;
+    padding: 8px 0;
+  }
+
+  .nav-toggle,
+  .nav-close {
+    display: none;
+  }
+
+  .theme-toggle-cluster {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 14px;
+    margin-left: 4px;
+    border-left: 1px solid var(--line);
+  }
+
+  .theme-toggle-label {
+    display: none;
   }
 
   .theme-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
     border: none;
     background: transparent;
     color: var(--muted);
     cursor: pointer;
-    transition: color 0.2s ease, transform 0.25s ease;
+    transition:
+      color 0.2s ease,
+      transform 0.25s ease;
   }
 
   .theme-toggle:hover {
@@ -121,18 +222,21 @@ import { withBase } from '@/lib/urls';
     outline-offset: 4px;
   }
 
-  .icon-sun, .icon-moon {
+  .icon-sun {
+    display: none;
+  }
+  .icon-moon {
+    display: block;
+  }
+  :global([data-theme="dark"]) .icon-sun {
+    display: block;
+  }
+  :global([data-theme="dark"]) .icon-moon {
     display: none;
   }
 
-  @media (max-width: 860px) {
+  @media (max-width: 640px) {
     .site-header {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .nav {
-      justify-content: flex-start;
       gap: 12px;
     }
 
@@ -144,14 +248,90 @@ import { withBase } from '@/lib/urls';
       font-size: 10px;
     }
 
-    .nav {
-      font-size: 10px;
+    .nav-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
     }
-  }
 
-  @media (max-width: 480px) {
     .nav {
-      gap: 10px;
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(32px, 8vw, 56px);
+      gap: clamp(20px, 4vw, 28px);
+    }
+
+    .site-header[data-open="true"] .nav {
+      display: flex;
+    }
+
+    .nav a {
+      font-family: var(--serif);
+      font-size: clamp(22px, 5vw, 28px);
+      text-transform: none;
+      letter-spacing: 0.005em;
+      color: var(--ink);
+      padding: 6px 0;
+      text-decoration: none;
+    }
+
+    .nav-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .theme-toggle-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding-left: 0;
+      margin-left: 0;
+      border-left: none;
+      margin-top: clamp(12px, 3vw, 20px);
+      padding-top: clamp(16px, 4vw, 24px);
+      border-top: 1px solid var(--line);
+      width: 100%;
+    }
+
+    .theme-toggle-label {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
   }
 </style>

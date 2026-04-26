@@ -43,18 +43,68 @@ const { title, description, path, image, imageAlt, imageWidth, imageHeight, type
     />
     <script is:inline>
       (function() {
-        var stored = localStorage.getItem('theme');
-        var prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = stored || (prefers ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
-        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#121110' : '#f3f0ea';
+        var META = document.querySelector('meta[name="theme-color"]');
+        var subscribers = [];
+
+        function getEffective() {
+          var explicit = document.documentElement.getAttribute('data-theme');
+          if (explicit === 'dark' || explicit === 'light') return explicit;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function apply(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          if (META) META.content = theme === 'dark' ? '#121110' : '#f3f0ea';
+          for (var i = 0; i < subscribers.length; i++) {
+            try { subscribers[i](theme); } catch (e) {}
+          }
+        }
+
+        // Initial application
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+        var initial = (stored === 'dark' || stored === 'light')
+          ? stored
+          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        apply(initial);
+
+        // System change listener (only follows system if user hasn't set explicit)
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+          var s = null;
+          try { s = localStorage.getItem('theme'); } catch (err) {}
+          if (s !== 'dark' && s !== 'light') {
+            apply(e.matches ? 'dark' : 'light');
+          }
+        });
+
+        window.__theme = {
+          get: getEffective,
+          set: function(theme) {
+            if (theme !== 'dark' && theme !== 'light') return;
+            try { localStorage.setItem('theme', theme); } catch (e) {}
+            apply(theme);
+          },
+          toggle: function() {
+            this.set(getEffective() === 'dark' ? 'light' : 'dark');
+          },
+          subscribe: function(fn) {
+            if (typeof fn !== 'function') return function() {};
+            subscribers.push(fn);
+            try { fn(getEffective()); } catch (e) {}
+            return function unsubscribe() {
+              var i = subscribers.indexOf(fn);
+              if (i !== -1) subscribers.splice(i, 1);
+            };
+          }
+        };
       })();
     </script>
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <SiteHeader />
-    <main>
+    <main id="main">
       <slot />
     </main>
     <SiteFooter />
