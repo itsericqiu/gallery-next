@@ -204,7 +204,7 @@ The workflow caches Astro's generated image assets with a key based on `src/asse
 
 The project has gone through several layout iterations:
 
-- old Jekyll gallery with static JPG references, previously published at `https://itsericqiu.github.io/gallery/`
+- old Jekyll gallery with static JPG references, originally published at `https://photos.ericqiu.io/` and now available at `https://itsericqiu.github.io/gallery/`
 - new Astro project with typed photo and collection data
 - local git-backed photo assets instead of `public/photos`
 - custom-domain deployment at `photos.ericqiu.io`
