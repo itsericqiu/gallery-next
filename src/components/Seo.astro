@@ -6,6 +6,10 @@ type Props = {
   description: string;
   path?: string;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  type?: 'website' | 'article';
 };
 
 const {
@@ -13,6 +17,10 @@ const {
   description,
   path = '/',
   image = '/og-image.jpg',
+  imageAlt,
+  imageWidth,
+  imageHeight,
+  type = 'website',
 } = Astro.props;
 
 const pageTitle = title.includes('Eric Qiu') ? title : `${title} | Eric Qiu Photos`;
@@ -29,14 +37,18 @@ const imageUrl = absoluteUrl(image);
 <meta property="og:site_name" content="Eric Qiu Photos" />
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:type" content="website" />
+<meta property="og:type" content={type} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={imageUrl} />
+{imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+{imageWidth && <meta property="og:image:width" content={String(imageWidth)} />}
+{imageHeight && <meta property="og:image:height" content={String(imageHeight)} />}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:creator" content="@itsericqiu" />
 <meta name="twitter:title" content={pageTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageUrl} />
+{imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
 <script type="application/ld+json" is:inline set:html={JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'WebSite',

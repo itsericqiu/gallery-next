@@ -10,9 +10,13 @@ type Props = {
   description: string;
   path?: string;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  type?: 'website' | 'article';
 };
 
-const { title, description, path, image } = Astro.props;
+const { title, description, path, image, imageAlt, imageWidth, imageHeight, type } = Astro.props;
 ---
 
 <!doctype html>
@@ -27,7 +31,16 @@ const { title, description, path, image } = Astro.props;
     <link rel="icon" href={withBase('/favicon-16x16.png')} type="image/png" sizes="16x16" />
     <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} sizes="180x180" />
     <link rel="manifest" href={withBase('/site.webmanifest')} />
-    <Seo title={title} description={description} path={path} image={image} />
+    <Seo
+      title={title}
+      description={description}
+      path={path}
+      image={image}
+      imageAlt={imageAlt}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      type={type}
+    />
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>

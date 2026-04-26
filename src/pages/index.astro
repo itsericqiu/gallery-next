@@ -3,15 +3,25 @@ import PhotoGrid from '@/components/PhotoGrid.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { collectionsByType, getCollection } from '@/data/collections';
 import { photosForCollection } from '@/lib/collections';
+import { collectionSeoImage } from '@/lib/seo-images';
 import { withBase } from '@/lib/urls';
 
 const selected = getCollection('selected');
 const selectedPhotos = photosForCollection(selected);
+const seoImage = await collectionSeoImage(selected);
 const places = collectionsByType('place');
 const series = collectionsByType('series');
 ---
 
-<BaseLayout title="Photos by Eric Qiu" description={selected.seoDescription ?? selected.description} path="/">
+<BaseLayout
+  title="Photos by Eric Qiu"
+  description={selected.seoDescription ?? selected.description}
+  path="/"
+  image={seoImage.src}
+  imageAlt={seoImage.alt}
+  imageWidth={seoImage.width}
+  imageHeight={seoImage.height}
+>
   <section class="hero hero--home">
     <p class="eyebrow">Selected photographs</p>
     <h1>Places, weather, city light, and the small things that stayed.</h1>

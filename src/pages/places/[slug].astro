@@ -3,6 +3,7 @@ import PhotoGrid from '@/components/PhotoGrid.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { collectionsByType, type Collection } from '@/data/collections';
 import { collectionSlugSegment, photosForCollection } from '@/lib/collections';
+import { collectionSeoImage } from '@/lib/seo-images';
 
 export function getStaticPaths() {
   return collectionsByType('place').map((collection) => ({
@@ -13,9 +14,18 @@ export function getStaticPaths() {
 
 const { collection } = Astro.props as { collection: Collection };
 const photos = photosForCollection(collection);
+const seoImage = await collectionSeoImage(collection);
 ---
 
-<BaseLayout title={collection.title} description={collection.description} path={collection.slug}>
+<BaseLayout
+  title={collection.title}
+  description={collection.description}
+  path={collection.slug}
+  image={seoImage.src}
+  imageAlt={seoImage.alt}
+  imageWidth={seoImage.width}
+  imageHeight={seoImage.height}
+>
   <section class="hero">
     <p class="eyebrow">Place</p>
     <h1>{collection.title}</h1>

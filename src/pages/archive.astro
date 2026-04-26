@@ -3,12 +3,22 @@ import PhotoGrid from '@/components/PhotoGrid.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getCollection } from '@/data/collections';
 import { photosForCollection } from '@/lib/collections';
+import { collectionSeoImage } from '@/lib/seo-images';
 
 const archive = getCollection('archive');
 const photos = photosForCollection(archive);
+const seoImage = await collectionSeoImage(archive);
 ---
 
-<BaseLayout title="Archive" description={archive.description} path="/archive/">
+<BaseLayout
+  title="Archive"
+  description={archive.description}
+  path="/archive/"
+  image={seoImage.src}
+  imageAlt={seoImage.alt}
+  imageWidth={seoImage.width}
+  imageHeight={seoImage.height}
+>
   <section class="hero hero--compact">
     <p class="eyebrow">Archive</p>
     <h1>All published photographs.</h1>

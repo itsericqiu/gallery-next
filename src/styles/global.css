@@ -196,12 +196,23 @@ h1 {
 .photo-tile img {
   height: 100%;
   object-fit: cover;
-  transition: opacity 160ms ease;
+  transition:
+    filter 220ms ease,
+    opacity 160ms ease,
+    transform 220ms ease;
   width: 100%;
 }
 
-.photo-tile:hover img {
-  opacity: 0.88;
+.photo-tile:hover img,
+.photo-tile:focus-visible img {
+  filter: saturate(0.92) contrast(1.04);
+  opacity: 0.9;
+  transform: scale(1.015);
+}
+
+.photo-tile:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 4px;
 }
 
 .index-panels {
@@ -300,6 +311,21 @@ figcaption,
   margin: 0;
 }
 
+.photo-expand {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: zoom-in;
+  display: block;
+  padding: 0;
+  text-align: inherit;
+}
+
+.photo-expand:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 6px;
+}
+
 .photo-page figure img {
   background:
     var(--placeholder) center / cover,
@@ -308,6 +334,50 @@ figcaption,
   max-height: 82vh;
   object-fit: contain;
   width: auto;
+}
+
+.photo-lightbox {
+  background: transparent;
+  border: 0;
+  height: 100dvh;
+  max-height: none;
+  max-width: none;
+  padding: clamp(18px, 4vw, 48px);
+  width: 100vw;
+}
+
+.photo-lightbox::backdrop {
+  background: rgba(24, 23, 20, 0.92);
+}
+
+.photo-lightbox img {
+  background: transparent;
+  height: 100%;
+  margin: auto;
+  max-height: calc(100dvh - 96px);
+  object-fit: contain;
+  width: 100%;
+}
+
+.photo-lightbox__close {
+  background: var(--bg);
+  border: 1px solid rgba(243, 240, 234, 0.34);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 10px 12px;
+  position: fixed;
+  right: 18px;
+  text-transform: uppercase;
+  top: 18px;
+  z-index: 2;
+}
+
+.photo-lightbox__close:focus-visible {
+  outline: 1px solid var(--bg);
+  outline-offset: 4px;
 }
 
 figcaption {
@@ -401,5 +471,16 @@ figcaption {
 
   .site-footer {
     display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-tile img {
+    transition: opacity 160ms ease;
+  }
+
+  .photo-tile:hover img,
+  .photo-tile:focus-visible img {
+    transform: none;
   }
 }

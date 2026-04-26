@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { photos, type Photo } from '@/data/photos';
 import { photoImage, photoPlaceholder } from '@/lib/media';
 import { relatedCollections } from '@/lib/collections';
+import { photoSeoImage } from '@/lib/seo-images';
 import { withBase } from '@/lib/urls';
 
 export function getStaticPaths() {
@@ -17,23 +18,35 @@ const collections = relatedCollections(photo).filter((collection) => collection.
 const title = photo.title ?? `Photo ${photo.id}`;
 const description = photo.caption ?? (photo.place ? `A photograph from ${photo.place} by Eric Qiu.` : 'A photograph by Eric Qiu.');
 const image = await photoImage(photo, 'detail');
+const seoImage = await photoSeoImage(photo);
 const placeholder = await photoPlaceholder(photo);
 ---
 
-<BaseLayout title={title} description={description} path={`/photos/${photo.id}/`} image={image.src}>
+<BaseLayout
+  title={title}
+  description={description}
+  path={`/photos/${photo.id}/`}
+  image={seoImage.src}
+  imageAlt={seoImage.alt}
+  imageWidth={seoImage.width}
+  imageHeight={seoImage.height}
+  type="article"
+>
   <article class="photo-page">
     <figure>
-      <img
-        src={image.src}
-        srcset={image.srcset}
-        alt={photo.alt}
-        width={image.width}
-        height={image.height}
-        sizes="(max-width: 860px) 100vw, calc(100vw - 420px)"
-        style={`--placeholder: url('${placeholder}')`}
-        fetchpriority="high"
-        decoding="async"
-      />
+      <button class="photo-expand" type="button" aria-haspopup="dialog" aria-label={`Open larger view of ${title}`}>
+        <img
+          src={image.src}
+          srcset={image.srcset}
+          alt={photo.alt}
+          width={image.width}
+          height={image.height}
+          sizes="(max-width: 860px) 100vw, calc(100vw - 420px)"
+          style={`--placeholder: url('${placeholder}')`}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </button>
       <figcaption>
         <span>{photo.place ?? 'Photograph'}</span>
         <span>{photo.id}</span>
@@ -53,4 +66,29 @@ const placeholder = await photoPlaceholder(photo);
       )}
     </aside>
   </article>
+
+  <dialog class="photo-lightbox" aria-label={`Larger view of ${title}`}>
+    <button class="photo-lightbox__close" type="button" aria-label="Close larger view">Close</button>
+    <img
+      src={image.src}
+      srcset={image.srcset}
+      alt={photo.alt}
+      width={image.width}
+      height={image.height}
+      sizes="100vw"
+      decoding="async"
+    />
+  </dialog>
+
+  <script>
+    const expand = document.querySelector<HTMLButtonElement>('.photo-expand');
+    const dialog = document.querySelector<HTMLDialogElement>('.photo-lightbox');
+    const close = document.querySelector<HTMLButtonElement>('.photo-lightbox__close');
+
+    expand?.addEventListener('click', () => dialog?.showModal());
+    close?.addEventListener('click', () => dialog?.close());
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  </script>
 </BaseLayout>
