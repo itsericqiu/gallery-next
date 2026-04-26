@@ -161,6 +161,28 @@ h1 {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.js .photo-grid:not(.is-packed) {
+  visibility: hidden;
+}
+
+.photo-grid.is-packed {
+  align-items: flex-start;
+  display: flex;
+  grid-template-columns: none;
+}
+
+.photo-grid--archive {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.photo-col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(10px, 1.8vw, 24px);
+  min-width: 0;
+}
+
 .photo-tile {
   aspect-ratio: var(--ratio);
   background:
@@ -169,10 +191,6 @@ h1 {
   display: block;
   overflow: hidden;
   text-decoration: none;
-}
-
-.photo-grid--archive {
-  grid-template-columns: repeat(4, 1fr);
 }
 
 .photo-tile img {
@@ -377,7 +395,7 @@ figcaption {
 
 @media (max-width: 520px) {
   .photo-grid,
-  .photo-grid--archive {
+  .photo-col {
     gap: 8px;
   }
 

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Photo Icon Preview</title>
+    <style>
+      :root { color: #24231f; background: #f3f0ea; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      body { margin: 0; padding: 32px; }
+      h1 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(32px, 6vw, 64px); font-weight: 400; letter-spacing: -0.04em; margin: 0 0 16px; }
+      p { color: #6f6a60; line-height: 1.6; max-width: 760px; }
+      .grid { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 36px; }
+      .card { border-top: 1px solid #d8d1c4; padding-top: 16px; }
+      .name { font-size: 12px; letter-spacing: .08em; margin-bottom: 12px; text-transform: uppercase; }
+      .row { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
+      .swatch { align-items: center; display: inline-flex; justify-content: center; }
+      .paper { background: #f3f0ea; }
+      .dark { background: #24231f; color: #f3f0ea; }
+      .transparent { background: repeating-linear-gradient(45deg, #ddd 0 8px, #f8f8f8 8px 16px); color: #24231f; }
+      img { display: block; height: auto; width: auto; }
+      .s16 img { width: 16px; } .s32 img { width: 32px; } .s64 img { width: 64px; } .s180 img { width: 180px; } .s512 img { width: 256px; }
+      .dark img { filter: none; }
+    </style>
+  </head>
+  <body>
+    <h1>Photo Icon Preview</h1>
+    <p>A quiet, editorial icon system for a personal photo archive: city light, architecture, weather, and memory. Shortlisted directions: Landscape / Nature Line, Archive Frame, Frame Empty, Frame Dot, and Frame Horizon.</p>
+    <main class="grid">
+      <script>
+        const icons = [
+          ['Two-line skyline / lens A', 'city-architecture-a.svg'],
+          ['Two-line skyline / lens B', 'city-architecture-b.svg'],
+          ['Architecture / coastline A', 'architecture-a.svg'],
+          ['Architecture / coastline B', 'architecture-b.svg'],
+          ['Landscape / Nature Line', 'landscape-line.svg'],
+          ['Archive Frame', 'archive-frame.svg'],
+          ['Frame Empty', 'frame-empty.svg'],
+          ['Frame Dot', 'frame-dot.svg'],
+          ['Frame Horizon', 'frame-horizon.svg'],
+          ['Frame Skyline', 'frame-skyline.svg'],
+          ['Frame Lens Line', 'frame-lens-line.svg'],
+          ['Quiet lowercase eq', 'eq-monogram.svg'],
+          ['Monogram Frame', 'monogram-frame.svg'],
+          ['Monogram Frame Dot', 'monogram-frame-dot.svg'],
+          ['Monogram e Stamp', 'monogram-e-stamp.svg'],
+          ['Monogram q Lens', 'monogram-q-lens.svg'],
+          ['Monogram Baseline', 'monogram-baseline.svg'],
+          ['Monogram Crop e', 'monogram-crop-e.svg'],
+          ['Transparent line-only', 'city-architecture-a-transparent.svg'],
+        ];
+        for (const [name, file] of icons) {
+          document.write(`<section class="card"><div class="name">${name}</div><div class="row">${[16, 32, 64, 180].map((size) => `<span class="swatch paper s${size}"><img src="/icons/source/${file}" alt="${name}" /></span>`).join('')}</div><div class="row"><span class="swatch dark s64"><img src="/icons/source/${file}" alt="${name} dark" /></span><span class="swatch transparent s64"><img src="/icons/source/${file}" alt="${name} transparent" /></span><span class="swatch paper s512"><img src="/icons/source/${file}" alt="${name} large" /></span></div></section>`);
+        }
+      </script>
+    </main>
+  </body>
+</html>

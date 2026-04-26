@@ -7,6 +7,7 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "icons": "node scripts/generate-icons.mjs",
     "add-photo": "node scripts/add-photo.mjs",
     "resize-all": "find src/assets/photos -name '*.jpg' -exec sips -Z 4000 {} \\;"
   },
@@ -15,5 +16,8 @@
     "astro": "^5.0.0",
     "typescript": "^5.7.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.5"
+  }
 }

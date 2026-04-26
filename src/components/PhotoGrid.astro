@@ -18,10 +18,11 @@ const renderedPhotos = await Promise.all(
 );
 ---
 
-<div class:list={['photo-grid', `photo-grid--${variant}`]}>
+<div class:list={['photo-grid', `photo-grid--${variant}`]} data-variant={variant}>
   {renderedPhotos.map(({ image, photo, placeholder }, index) => (
     <a
       class="photo-tile"
+      data-index={index}
       href={withBase(`/photos/${photo.id}/`)}
       style={`--ratio: ${aspectRatio(photo)}; --placeholder: url('${placeholder}')`}
     >
@@ -41,3 +42,72 @@ const renderedPhotos = await Promise.all(
     </a>
   ))}
 </div>
+
+<script>
+  type PhotoTile = HTMLElement & { dataset: DOMStringMap };
+
+  function columnCount(variant: string | undefined): number {
+    if (window.innerWidth <= 860) return 2;
+    return variant === 'archive' ? 4 : 3;
+  }
+
+  function pack(grid: HTMLElement) {
+    const variant = grid.dataset.variant;
+    const numCols = columnCount(variant);
+    const tiles = Array.from(grid.querySelectorAll<PhotoTile>('.photo-tile')).sort(
+      (a, b) => Number(a.dataset.index) - Number(b.dataset.index),
+    );
+    if (tiles.length === 0) return;
+
+    const cols: HTMLElement[][] = Array.from({ length: numCols }, () => []);
+    const heights = new Array<number>(numCols).fill(0);
+
+    for (const tile of tiles) {
+      const ratio = tile.style.getPropertyValue('--ratio');
+      const [w, h] = ratio.split('/').map((n) => parseFloat(n.trim()));
+      const inverseAspect = w > 0 ? h / w : 1;
+
+      let minIdx = 0;
+      for (let i = 1; i < numCols; i++) {
+        if (heights[i] < heights[minIdx]) minIdx = i;
+      }
+      cols[minIdx].push(tile);
+      heights[minIdx] += inverseAspect;
+    }
+
+    const colEls = cols.map((col) => {
+      const div = document.createElement('div');
+      div.className = 'photo-col';
+      for (const tile of col) div.appendChild(tile);
+      return div;
+    });
+
+    grid.replaceChildren(...colEls);
+    grid.dataset.columns = String(numCols);
+    grid.classList.add('is-packed');
+  }
+
+  const grids = Array.from(document.querySelectorAll<HTMLElement>('.photo-grid'));
+  try {
+    grids.forEach(pack);
+  } catch (error) {
+    document.documentElement.classList.remove('js');
+    console.error(error);
+  }
+
+  const currentColumns = new WeakMap<HTMLElement, number>();
+  grids.forEach((grid) => currentColumns.set(grid, columnCount(grid.dataset.variant)));
+  let resizeTimer: number;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      for (const grid of grids) {
+        const nextColumns = columnCount(grid.dataset.variant);
+        if (nextColumns !== currentColumns.get(grid)) {
+          pack(grid);
+          currentColumns.set(grid, nextColumns);
+        }
+      }
+    }, 150);
+  });
+</script>

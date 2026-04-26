@@ -1,12 +1,11 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <rect width="512" height="512" rx="104" fill="var(--paper, #f3f0ea)"/>
   <g fill="none" stroke="var(--ink, #24231f)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M150 212V150H212"/>
-    <path d="M300 150H362V212"/>
-    <path d="M362 300V362H300"/>
-    <path d="M212 362H150V300"/>
-    <path d="M188 306H324"/>
-    <path d="M206 284L238 254L264 280L288 258L322 306"/>
+    <path d="M146 214V146H214"/>
+    <path d="M298 146H366V214"/>
+    <path d="M366 298V366H298"/>
+    <path d="M214 366H146V298"/>
+    <path d="M184 306C202 264 230 244 256 244C286 244 312 266 328 306"/>
+    <path d="M328 306H344"/>
   </g>
-  <circle cx="312" cy="222" r="6" fill="var(--accent, #b9823d)"/>
 </svg>
