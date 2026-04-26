@@ -86,12 +86,47 @@ import { withBase } from '@/lib/urls';
     text-transform: uppercase;
   }
 
-  .nav {
+.nav {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
     justify-content: flex-end;
+    font-size: 11px;
+  }
+
+  .nav a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 860px) {
+    .site-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .nav {
+      justify-content: flex-start;
+      gap: 12px;
+    }
+
+    .brand {
+      font-size: 16px;
+    }
+
+    .brand em {
+      font-size: 10px;
+    }
+
+    .nav {
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav {
+      gap: 10px;
+    }
   }
 
   .nav a {
