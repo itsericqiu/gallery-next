@@ -408,6 +408,7 @@ figcaption,
   right: 12px;
   text-transform: uppercase;
   top: 12px;
+  touch-action: manipulation; /* Prevents double-tap zoom on mobile */
   z-index: 3;
 }
 
@@ -415,9 +416,6 @@ figcaption,
   outline: none;
 }
 
-.photo-lightbox__close:focus-visible {
-  outline: none;
-}
 
 .collection-lightbox {
   background: transparent;
@@ -519,6 +517,7 @@ figcaption,
   min-width: 44px;
   padding: 10px 12px;
   position: fixed;
+  touch-action: manipulation; /* Prevents double-tap zoom on mobile */
   transition:
     background 0.18s ease,
     border-color 0.18s ease,
@@ -561,12 +560,6 @@ figcaption,
   border-color: rgba(243, 240, 234, 0.42);
 }
 
-.collection-lightbox__close:focus-visible,
-.collection-lightbox__nav:focus-visible,
-.collection-lightbox__photo-link:focus-visible {
-  outline: 2px solid #f3f0ea;
-  outline-offset: 4px;
-}
 
 figcaption {
   display: flex;
