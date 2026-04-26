@@ -5,7 +5,6 @@ import { photoImage, photoPlaceholder, detailSizes } from '@/lib/media';
 import { relatedCollections } from '@/lib/collections';
 import { photoSeoImage } from '@/lib/seo-images';
 import { withBase } from '@/lib/urls';
-import { getCollection } from '@/data/collections';
 
 export function getStaticPaths() {
   return photos.map((photo) => ({
@@ -21,13 +20,6 @@ const description = photo.caption ?? (photo.place ? `A photograph from ${photo.p
 const image = await photoImage(photo, 'detail');
 const seoImage = await photoSeoImage(photo);
 const placeholder = await photoPlaceholder(photo);
-
-const archive = getCollection('archive');
-const idx = archive.photoIds.indexOf(photo.id);
-const prevId = idx > 0 ? archive.photoIds[idx - 1] : null;
-const nextId = idx >= 0 && idx < archive.photoIds.length - 1 ? archive.photoIds[idx + 1] : null;
-const prevHref = prevId ? withBase(`/photos/${prevId}/`) : null;
-const nextHref = nextId ? withBase(`/photos/${nextId}/`) : null;
 ---
 
 <BaseLayout
@@ -77,12 +69,6 @@ const nextHref = nextId ? withBase(`/photos/${nextId}/`) : null;
 
   <dialog class="photo-lightbox" aria-label={`Larger view of ${title}`}>
     <button class="photo-lightbox__close" type="button" aria-label="Close larger view">Close</button>
-    {prevHref && (
-      <a class="photo-lightbox__nav photo-lightbox__nav--prev" href={prevHref} aria-label="Previous photo">←</a>
-    )}
-    {nextHref && (
-      <a class="photo-lightbox__nav photo-lightbox__nav--next" href={nextHref} aria-label="Next photo">→</a>
-    )}
     <img
       src={image.src}
       srcset={image.srcset}
@@ -98,23 +84,13 @@ const nextHref = nextId ? withBase(`/photos/${nextId}/`) : null;
     const expand = document.querySelector<HTMLButtonElement>('.photo-expand');
     const dialog = document.querySelector<HTMLDialogElement>('.photo-lightbox');
     const close = document.querySelector<HTMLButtonElement>('.photo-lightbox__close');
+    const img = dialog?.querySelector<HTMLImageElement>('img');
 
     expand?.addEventListener('click', () => dialog?.showModal());
     close?.addEventListener('click', () => dialog?.close());
     dialog?.addEventListener('click', (event) => {
-      if (event.target === dialog) dialog.close();
-    });
-
-    const prevLink = document.querySelector<HTMLAnchorElement>('.photo-lightbox__nav--prev');
-    const nextLink = document.querySelector<HTMLAnchorElement>('.photo-lightbox__nav--next');
-    document.addEventListener('keydown', (event) => {
-      if (!dialog?.open) return;
-      if (event.key === 'ArrowLeft' && prevLink) {
-        event.preventDefault();
-        window.location.assign(prevLink.href);
-      } else if (event.key === 'ArrowRight' && nextLink) {
-        event.preventDefault();
-        window.location.assign(nextLink.href);
+      if (event.target !== close && event.target !== img) {
+        dialog.close();
       }
     });
   </script>

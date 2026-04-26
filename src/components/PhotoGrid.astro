@@ -1,6 +1,6 @@
 ---
 import type { Photo } from '@/data/photos';
-import { aspectRatio, photoImage, photoPlaceholder, gridSizes } from '@/lib/media';
+import { aspectRatio, photoImage, photoPlaceholder, gridSizes, detailSizes } from '@/lib/media';
 import { withBase } from '@/lib/urls';
 
 type Props = {
@@ -11,27 +11,39 @@ type Props = {
 const { photos, variant = 'editorial' } = Astro.props;
 const renderedPhotos = await Promise.all(
   photos.map(async (photo) => ({
-    image: await photoImage(photo, 'grid'),
+    gridImage: await photoImage(photo, 'grid'),
+    lightboxImage: await photoImage(photo, 'detail'),
     placeholder: await photoPlaceholder(photo),
     photo,
+    href: withBase(`/photos/${photo.id}/`),
   })),
 );
+
+const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
+  id: photo.id,
+  alt: photo.alt,
+  href,
+  src: lightboxImage.src,
+  srcset: lightboxImage.srcset,
+  width: lightboxImage.width,
+  height: lightboxImage.height,
+}));
 ---
 
 <div class:list={['photo-grid', `photo-grid--${variant}`]} data-variant={variant}>
-  {renderedPhotos.map(({ image, photo, placeholder }, index) => (
+  {renderedPhotos.map(({ gridImage, photo, placeholder, href }, index) => (
     <a
       class="photo-tile"
       data-index={index}
-      href={withBase(`/photos/${photo.id}/`)}
+      href={href}
       style={`--ratio: ${aspectRatio(photo)}; --placeholder: url('${placeholder}')`}
     >
       <img
-        src={image.src}
-        srcset={image.srcset}
+        src={gridImage.src}
+        srcset={gridImage.srcset}
         alt={photo.alt}
-        width={image.width}
-        height={image.height}
+        width={gridImage.width}
+        height={gridImage.height}
         sizes={gridSizes(variant)}
         loading={index < 2 ? 'eager' : 'lazy'}
         fetchpriority={index === 0 ? 'high' : 'auto'}
@@ -41,8 +53,33 @@ const renderedPhotos = await Promise.all(
   ))}
 </div>
 
+<script is:inline type="application/json" class="photo-grid__items" set:html={JSON.stringify(lightboxItems)}></script>
+
+<dialog class="collection-lightbox" aria-label="Photo viewer">
+  <button class="collection-lightbox__close" type="button" aria-label="Close photo viewer">Close</button>
+  <button class="collection-lightbox__nav collection-lightbox__nav--prev" type="button" aria-label="Previous photo">←</button>
+  <div class="collection-lightbox__stage">
+    <img class="collection-lightbox__image" alt="" sizes={detailSizes()} decoding="async" />
+  </div>
+  <button class="collection-lightbox__nav collection-lightbox__nav--next" type="button" aria-label="Next photo">→</button>
+  <aside class="collection-lightbox__meta" aria-live="polite">
+    <p class="collection-lightbox__count"></p>
+    <a class="collection-lightbox__photo-link" href="">View photo page</a>
+  </aside>
+</dialog>
+
 <script>
   type PhotoTile = HTMLElement & { dataset: DOMStringMap };
+
+  type LightboxItem = {
+    id: string;
+    alt: string;
+    href: string;
+    src: string;
+    srcset: string;
+    width: number;
+    height: number;
+  };
 
   function columnCount(variant: string | undefined): number {
     const w = window.innerWidth;
@@ -87,9 +124,183 @@ const renderedPhotos = await Promise.all(
     grid.classList.add('is-packed');
   }
 
+  function isPlainLeftClick(event: MouseEvent, link: HTMLAnchorElement): boolean {
+    return (
+      event.button === 0 &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey &&
+      link.target !== '_blank'
+    );
+  }
+
+  function initLightbox(grid: HTMLElement) {
+    if (grid.dataset.lightboxReady === 'true') return;
+
+    const dataEl = grid.nextElementSibling;
+    const dialog = dataEl?.nextElementSibling;
+    if (!(dataEl instanceof HTMLScriptElement)) return;
+    if (!(dialog instanceof HTMLDialogElement)) return;
+
+    const dialogEl = dialog;
+
+    const items = JSON.parse(dataEl.textContent || '[]') as LightboxItem[];
+    if (items.length === 0) return;
+
+    const image = dialog.querySelector<HTMLImageElement>('.collection-lightbox__image');
+    const closeButton = dialog.querySelector<HTMLButtonElement>('.collection-lightbox__close');
+    const prevButton = dialog.querySelector<HTMLButtonElement>('.collection-lightbox__nav--prev');
+    const nextButton = dialog.querySelector<HTMLButtonElement>('.collection-lightbox__nav--next');
+    const count = dialog.querySelector<HTMLElement>('.collection-lightbox__count');
+    const pageLink = dialog.querySelector<HTMLAnchorElement>('.collection-lightbox__photo-link');
+    if (!image || !closeButton || !prevButton || !nextButton || !count || !pageLink) return;
+
+    const imageEl = image;
+    const closeButtonEl = closeButton;
+    const countEl = count;
+    const pageLinkEl = pageLink;
+
+    grid.dataset.lightboxReady = 'true';
+
+    let activeIndex = 0;
+    let opener: HTMLElement | null = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let renderToken = 0;
+
+    function wrappedIndex(index: number): number {
+      return (index + items.length) % items.length;
+    }
+
+    async function preloadImage(item: LightboxItem): Promise<void> {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = item.src;
+        img.srcset = item.srcset;
+        img.decode?.().then(() => resolve()).catch(() => resolve());
+        if (img.complete) resolve();
+      });
+    }
+
+    function prefetchAdjacent(index: number) {
+      const prevItem = items[wrappedIndex(index - 1)];
+      const nextItem = items[wrappedIndex(index + 1)];
+      if (prevItem) {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = prevItem.src;
+        document.head.appendChild(link);
+      }
+      if (nextItem) {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = nextItem.src;
+        document.head.appendChild(link);
+      }
+    }
+
+    async function render(index: number) {
+      const token = ++renderToken;
+      const targetIndex = wrappedIndex(index);
+      const item = items[targetIndex];
+
+      dialogEl.dataset.loading = 'true';
+      await preloadImage(item);
+
+      if (token !== renderToken) return;
+
+      activeIndex = targetIndex;
+      imageEl.src = item.src;
+      imageEl.srcset = item.srcset;
+      imageEl.width = item.width;
+      imageEl.height = item.height;
+      imageEl.alt = item.alt;
+      countEl.textContent = `${activeIndex + 1} / ${items.length}`;
+      pageLinkEl.href = item.href;
+      dialogEl.dataset.loading = 'false';
+
+      prefetchAdjacent(activeIndex);
+    }
+
+    function open(index: number, source: HTMLElement) {
+      opener = source;
+      render(index).then(() => {
+        dialogEl.showModal();
+        closeButtonEl.focus();
+      });
+      prefetchAdjacent(index);
+    }
+
+    function close() {
+      dialogEl.close();
+    }
+
+    function previous() {
+      render(activeIndex - 1);
+    }
+
+    function next() {
+      render(activeIndex + 1);
+    }
+
+    grid.addEventListener('click', (event) => {
+      const link = (event.target as Element).closest<HTMLAnchorElement>('.photo-tile');
+      if (!link || !grid.contains(link)) return;
+      if (!isPlainLeftClick(event as MouseEvent, link)) return;
+
+      const index = Number(link.dataset.index);
+      if (!Number.isFinite(index)) return;
+
+      event.preventDefault();
+      open(index, link);
+    });
+
+    closeButtonEl.addEventListener('click', close);
+    prevButton.addEventListener('click', previous);
+    nextButton.addEventListener('click', next);
+
+    dialogEl.addEventListener('click', (event) => {
+      if (event.target === dialog) close();
+    });
+
+    dialogEl.addEventListener('close', () => {
+      opener?.focus({ preventScroll: true });
+      opener = null;
+    });
+
+    dialogEl.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        previous();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        next();
+      }
+    });
+
+    dialogEl.addEventListener('touchstart', (event) => {
+      const touch = event.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    dialogEl.addEventListener('touchend', (event) => {
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      if (dx < 0) next();
+      else previous();
+    }, { passive: true });
+  }
+
   const grids = Array.from(document.querySelectorAll<HTMLElement>('.photo-grid'));
   try {
-    grids.forEach(pack);
+    grids.forEach((grid) => {
+      pack(grid);
+      initLightbox(grid);
+    });
   } catch (error) {
     document.documentElement.classList.remove('js');
     console.error(error);
