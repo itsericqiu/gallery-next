@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E '\\\\.\\(yml|yaml|json|config|toml|js|ts|md\\)$')",
+      "Bash(git *)",
+      "WebFetch(domain:photos.ericqiu.io)",
+      "Bash(xargs ls *)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(grep -E '\\\\.\\(css|html|js|ts|astro|jsx|tsx\\)$')",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(pkill -f \"astro dev\")",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}

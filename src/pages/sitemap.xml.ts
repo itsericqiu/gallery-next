@@ -9,7 +9,7 @@ export function GET() {
     '/series/',
     '/archive/',
     '/about/',
-    ...collections.filter((collection) => collection.slug !== '/').map((collection) => collection.slug),
+    ...collections.filter((collection) => collection.slug !== '/' && collection.slug !== '/archive/').map((collection) => collection.slug),
     ...photos.map((photo) => `/photos/${photo.id}/`),
   ];
 
