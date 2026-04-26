@@ -248,15 +248,12 @@ h1 {
 .photo-tile img {
   height: 100%;
   object-fit: cover;
-  transition:
-    opacity 160ms ease,
-    transform 220ms ease;
+  transition: transform 220ms ease;
   width: 100%;
 }
 
 .photo-tile:hover img,
 .photo-tile:focus-visible img {
-  opacity: 0.9;
   transform: scale(1.015);
 }
 
