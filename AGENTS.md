@@ -28,6 +28,24 @@ Do not add new photos to `public/photos`.
 - `src/lib/media.ts`: image sizes and Astro image optimization.
 - `src/lib/photo-assets.ts`: asset lookup for files in `src/assets/photos`.
 - `scripts/add-photo.mjs`: preferred intake script for new photos.
+- `scripts/generate-og-image.mjs`: generates OG social share image from photo selection.
+- `scripts/generate-icons.mjs`: generates favicon and app icons from SVG sources.
+
+## OG Image Generation
+
+The OG image (`public/og-image.png`) is generated from `scripts/generate-og-image.mjs`. It creates a 1200x630 image with:
+
+- **Left side**: Film reel with 4 photos in portrait-style white-bordered frames
+  - 340x227 frames (3:2 landscape ratio)
+  - 6px white border with subtle drop shadow
+  - Photos scaled to full width, center-cropped vertically to fit
+  - Layout: middle two photos fully visible, top/bottom clipped at edges
+- **Right side**: Text overlay with typography
+  - Fraunces (serif) for name
+  - Space Mono (monospace) for metadata
+  - Left border accent line
+
+Run `node scripts/generate-og-image.mjs` to regenerate after changes.
 - `scripts/generate-icons.mjs`: generates favicon, Apple, and manifest icons from SVG sources.
 
 ## Before Editing
