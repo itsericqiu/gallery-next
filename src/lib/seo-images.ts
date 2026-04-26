@@ -25,5 +25,13 @@ export function collectionCoverPhoto(collection: Collection): Photo {
 }
 
 export async function collectionSeoImage(collection: Collection): Promise<SeoImage> {
+  if (collection.id === 'selected') {
+    return {
+      src: '/og-image.png',
+      width: 1200,
+      height: 630,
+      alt: 'Photo mosaic with images from Iceland, Japan, Spain, and other places.',
+    };
+  }
   return photoSeoImage(collectionCoverPhoto(collection));
 }
