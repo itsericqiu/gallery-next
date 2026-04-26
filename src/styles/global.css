@@ -10,7 +10,6 @@
   --accent: #5f5548;
   --link-decoration: rgba(36, 35, 31, 0.28);
   --photo-overlay: rgba(36, 35, 31, 0.08);
-  --selection: rgba(184, 145, 90, 0.25);
   --max: 1360px;
   --pad: clamp(18px, 4vw, 52px);
   --serif: 'Iowan Old Style', Iowan, 'Palatino Linotype', Palatino, Georgia, serif;
@@ -30,7 +29,6 @@
   --accent: #ceba98;
   --link-decoration: rgba(232, 228, 220, 0.32);
   --photo-overlay: rgba(232, 228, 220, 0.06);
-  --selection: rgba(184, 145, 90, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -57,10 +55,6 @@ html {
   color: var(--ink);
   font-family: var(--sans);
   text-rendering: optimizeLegibility;
-}
-
-::selection {
-  background: var(--selection);
 }
 
 body {
