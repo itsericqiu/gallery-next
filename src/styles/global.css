@@ -185,7 +185,7 @@ main,
 
 h1 {
   font-family: var(--serif);
-  font-size: clamp(26px, 5.2vw, 64px);
+  font-size: clamp(22px, 5.2vw, 64px);
   font-weight: 400;
   letter-spacing: -0.025em;
   line-height: 1.08;
@@ -503,7 +503,7 @@ figcaption {
 
   h1,
   .hero:not(.hero--home) h1 {
-    font-size: clamp(42px, 15vw, 76px);
+    font-size: clamp(24px, 8vw, 48px);
   }
 
   .photo-grid,
@@ -525,6 +525,10 @@ figcaption {
   .nav {
     font-size: 10px;
     gap: 10px;
+  }
+
+  h1 {
+    font-size: clamp(20px, 7vw, 36px);
   }
 
   .photo-grid,
