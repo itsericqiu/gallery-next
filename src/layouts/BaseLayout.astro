@@ -41,6 +41,15 @@ const { title, description, path, image, imageAlt, imageWidth, imageHeight, type
       imageHeight={imageHeight}
       type={type}
     />
+    <script is:inline>
+      (function() {
+        var stored = localStorage.getItem('theme');
+        var prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = stored || (prefers ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#121110' : '#f3f0ea';
+      })();
+    </script>
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
