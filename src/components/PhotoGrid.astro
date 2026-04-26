@@ -173,6 +173,7 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
       return (index + items.length) % items.length;
     }
 
+    // Relies on browser HTTP cache - lightweight implementation
     async function preloadImage(item: LightboxItem): Promise<void> {
       return new Promise((resolve) => {
         const img = new Image();
@@ -184,20 +185,26 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     }
 
     function prefetchAdjacent(index: number) {
-      const prevItem = items[wrappedIndex(index - 1)];
-      const nextItem = items[wrappedIndex(index + 1)];
-      if (prevItem) {
+      // Prefetch ±3 photos (user choice for aggressive skipping)
+      const offsets = [-3, -2, -1, 1, 2, 3];
+      
+      offsets.forEach(offset => {
+        const targetIdx = wrappedIndex(index + offset);
+        const item = items[targetIdx];
+        if (!item) return;
+        
+        // Skip if already prefetched (unique ID prevents duplicates)
+        const prefetchId = `prefetch-${item.id}`;
+        if (document.getElementById(prefetchId)) return;
+        
         const link = document.createElement('link');
+        link.id = prefetchId;
         link.rel = 'prefetch';
-        link.href = prevItem.src;
+        link.href = item.src;
+        link.imageSrcset = item.srcset;
+        link.crossOrigin = 'anonymous';
         document.head.appendChild(link);
-      }
-      if (nextItem) {
-        const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = nextItem.src;
-        document.head.appendChild(link);
-      }
+      });
     }
 
     async function render(index: number) {
@@ -259,6 +266,27 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     closeButtonEl.addEventListener('click', close);
     prevButton.addEventListener('click', previous);
     nextButton.addEventListener('click', next);
+
+    // Desktop-only hover preload for navigation arrows
+    if (!('ontouchstart' in window)) {
+      const preloadItem = (item: LightboxItem) => {
+        const img = new Image();
+        img.src = item.src;
+        img.srcset = item.srcset;
+      };
+
+      prevButton.addEventListener('mouseenter', () => {
+        const targetIdx = wrappedIndex(activeIndex - 1);
+        const item = items[targetIdx];
+        if (item) preloadItem(item);
+      }, { once: true });
+
+      nextButton.addEventListener('mouseenter', () => {
+        const targetIdx = wrappedIndex(activeIndex + 1);
+        const item = items[targetIdx];
+        if (item) preloadItem(item);
+      }, { once: true });
+    }
 
     dialogEl.addEventListener('click', (event) => {
       if (event.target === dialog) close();
