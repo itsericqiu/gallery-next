@@ -84,12 +84,24 @@ const placeholder = await photoPlaceholder(photo);
     const expand = document.querySelector<HTMLButtonElement>('.photo-expand');
     const dialog = document.querySelector<HTMLDialogElement>('.photo-lightbox');
     const close = document.querySelector<HTMLButtonElement>('.photo-lightbox__close');
-    const img = dialog?.querySelector<HTMLImageElement>('img');
 
     expand?.addEventListener('click', () => dialog?.showModal());
     close?.addEventListener('click', () => dialog?.close());
     dialog?.addEventListener('click', (event) => {
-      if (event.target !== close && event.target !== img) {
+      const nonCloseSelectors = ['img', 'button', '[class*="close"]'];
+
+      let el: Element | null = event.target as Element;
+      let shouldClose = true;
+
+      while (el && el !== dialog) {
+        if (nonCloseSelectors.some((selector) => (el as Element).matches?.(selector))) {
+          shouldClose = false;
+          break;
+        }
+        el = el.parentElement;
+      }
+
+      if (shouldClose) {
         dialog.close();
       }
     });

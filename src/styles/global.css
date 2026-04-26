@@ -370,6 +370,8 @@ figcaption,
   max-height: none;
   max-width: none;
   min-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: contain;
   padding: 12px;
   padding-bottom: max(12px, env(safe-area-inset-bottom));
   position: fixed;

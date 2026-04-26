@@ -282,7 +282,27 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     }
 
     dialogEl.addEventListener('click', (event) => {
-      if (event.target === dialog) close();
+      const nonCloseSelectors = [
+        'img',
+        'button',
+        'a',
+        '[class*="nav"]',
+        '[class*="close"]',
+        '[class*="meta"]',
+      ];
+
+      let el: Element | null = event.target as Element;
+      let shouldClose = true;
+
+      while (el && el !== dialog) {
+        if (nonCloseSelectors.some((selector) => (el as Element).matches?.(selector))) {
+          shouldClose = false;
+          break;
+        }
+        el = el.parentElement;
+      }
+
+      if (shouldClose) close();
     });
 
     dialogEl.addEventListener('close', () => {
