@@ -98,7 +98,7 @@ const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
   },
   'misc-047': {
     title: 'Night Tram',
-    caption: 'A red tram in the rain. Hard to improve on that.',
+    caption: 'A red tram coming through the rain at night.',
     alt: 'Red tram approaching at night on a rainy city street.',
   },
   'spain-014': {
@@ -108,7 +108,7 @@ const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
   },
   'spain-002': {
     title: 'Above the City',
-    caption: 'A hillside overlook above the city, taken mostly for the layers.',
+    caption: 'The city from a tree-lined overlook on the hill.',
     alt: 'View over a Spanish city from a tree-lined hillside overlook.',
   },
   'spain-003': {
@@ -158,7 +158,7 @@ const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
   },
   'spain-020': {
     title: 'Green Gate',
-    caption: 'A green door set into old stone. Not the main doorway, but the better color.',
+    caption: 'A green door set into old stone.',
     alt: 'Old stone gate and cypress tree beside a quiet courtyard.',
   },
   'spain-009': {
@@ -193,7 +193,7 @@ const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
   },
   'japan-051': {
     title: 'Tokyo Tower, Night',
-    caption: 'Tokyo Tower above the street, not exactly hiding.',
+    caption: 'Tokyo Tower glowing over the street at night.',
     alt: 'Tokyo Tower glowing orange above a nighttime city street.',
   },
   'japan-052': {
@@ -218,7 +218,7 @@ const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
   },
   'london-031': {
     title: 'Over London',
-    caption: 'London and the Thames from the plane, before the window got worse.',
+    caption: 'London and the Thames from the plane, engine in frame.',
     alt: 'Aerial view of London and the Thames beside an airplane engine.',
   },
   'london-030': {
@@ -243,7 +243,7 @@ const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
   },
   'new-york-city-049': {
     title: 'Lower Manhattan',
-    caption: 'Lower Manhattan from across the water, exactly as advertised.',
+    caption: 'Lower Manhattan from across the river.',
     alt: 'Lower Manhattan skyline seen across the water in daylight.',
   },
   'new-york-city-048': {
@@ -317,7 +317,7 @@ export const photos: Photo[] = entries.map(([id, place, key, width, height, tags
   id,
   title: metadata[id]?.title,
   caption: metadata[id]?.caption,
-  alt: metadata[id]?.alt ?? (place ? `Photograph from ${place}` : 'Photograph by Eric Qiu'),
+  alt: metadata[id]?.alt ?? (place ? `Photo from ${place}` : 'Photo by Eric Qiu'),
   width,
   height,
   place,
