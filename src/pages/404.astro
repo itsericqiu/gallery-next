@@ -1,0 +1,15 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { withBase } from '@/lib/urls';
+---
+
+<BaseLayout title="Not found" description="Nothing at this address." path="/404/" noindex>
+  <section class="prose-page">
+    <p class="eyebrow">404</p>
+    <h1>Nothing at this address.</h1>
+    <p>
+      The photo or page may have moved. Try the <a href={withBase('/')}>home page</a> or the
+      <a href={withBase('/archive/')}>archive</a> — everything on the site is in there.
+    </p>
+  </section>
+</BaseLayout>

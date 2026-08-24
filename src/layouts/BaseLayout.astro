@@ -14,9 +14,10 @@ type Props = {
   imageWidth?: number;
   imageHeight?: number;
   type?: 'website' | 'article';
+  noindex?: boolean;
 };
 
-const { title, description, path, image, imageAlt, imageWidth, imageHeight, type } = Astro.props;
+const { title, description, path, image, imageAlt, imageWidth, imageHeight, type, noindex } = Astro.props;
 ---
 
 <!doctype html>
@@ -40,6 +41,7 @@ const { title, description, path, image, imageAlt, imageWidth, imageHeight, type
       imageWidth={imageWidth}
       imageHeight={imageHeight}
       type={type}
+      noindex={noindex}
     />
     <script is:inline>
       (function() {

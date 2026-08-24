@@ -636,6 +636,36 @@ figcaption {
   padding: 18px 0 0;
 }
 
+.photo-pager {
+  border-top: 1px solid var(--line);
+  display: flex;
+  font-size: 14px;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+.photo-pager a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.photo-pager a:hover {
+  color: var(--accent);
+}
+
+.collection-next {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  margin-top: clamp(36px, 6vw, 64px);
+  padding-top: 20px;
+  text-transform: uppercase;
+}
+
 @media (max-width: 720px) {
   .hero,
   .photo-page {
@@ -750,7 +780,16 @@ figcaption {
   }
 }
 
+/* Zero durations only — never animation-delay: the grid-reveal failsafe's
+   1.5s delay is load-bearing. */
 @media (prefers-reduced-motion: reduce) {
+  a,
+  .skip-link,
+  .collection-card__title,
+  .collection-lightbox__image {
+    transition: none;
+  }
+
   .photo-tile img {
     transition: none;
   }

@@ -7,13 +7,17 @@ import { photoSeoImage } from '@/lib/seo-images';
 import { withBase } from '@/lib/urls';
 
 export function getStaticPaths() {
-  return photos.map((photo) => ({
+  return photos.map((photo, index) => ({
     params: { id: photo.id },
-    props: { photo },
+    props: {
+      photo,
+      prev: photos[index - 1] ?? null,
+      next: photos[index + 1] ?? null,
+    },
   }));
 }
 
-const { photo } = Astro.props as { photo: Photo };
+const { photo, prev, next } = Astro.props as { photo: Photo; prev: Photo | null; next: Photo | null };
 const collections = relatedCollections(photo).filter((collection) => collection.type !== 'archive');
 const title = photo.title ?? `Photo ${photo.id}`;
 const description = photo.caption ?? (photo.place ? `A photo from ${photo.place} by Eric Qiu.` : 'A photo by Eric Qiu.');
@@ -64,6 +68,10 @@ const placeholder = await photoPlaceholder(photo);
           ))}
         </ul>
       )}
+      <nav class="photo-pager" aria-label="Adjacent photos">
+        {prev ? <a href={withBase(`/photos/${prev.id}/`)} rel="prev">← {prev.title ?? 'Previous'}</a> : <span />}
+        {next ? <a href={withBase(`/photos/${next.id}/`)} rel="next">{next.title ?? 'Next'} →</a> : <span />}
+      </nav>
     </aside>
   </article>
 

@@ -4,15 +4,20 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { collectionsByType, type Collection } from '@/data/collections';
 import { collectionSlugSegment, photosForCollection } from '@/lib/collections';
 import { collectionSeoImage } from '@/lib/seo-images';
+import { withBase } from '@/lib/urls';
 
 export function getStaticPaths() {
-  return collectionsByType('place').map((collection) => ({
+  const places = collectionsByType('place');
+  return places.map((collection, index) => ({
     params: { slug: collectionSlugSegment(collection) },
-    props: { collection },
+    props: { collection, nextCollection: places[(index + 1) % places.length] },
   }));
 }
 
-const { collection } = Astro.props as { collection: Collection };
+const { collection, nextCollection } = Astro.props as {
+  collection: Collection;
+  nextCollection: Collection;
+};
 const photos = photosForCollection(collection);
 const seoImage = await collectionSeoImage(collection);
 ---
@@ -27,10 +32,12 @@ const seoImage = await collectionSeoImage(collection);
   imageHeight={seoImage.height}
 >
   <section class="hero hero--collection">
-    <p class="eyebrow">Place</p>
+    <p class="eyebrow"><a href={withBase('/places/')}>Places</a></p>
     <h1>{collection.title}</h1>
     <p class="lede">{collection.description}</p>
   </section>
 
   <PhotoGrid photos={photos} />
+
+  <p class="collection-next">Next place: <a href={withBase(nextCollection.slug)}>{nextCollection.title}</a></p>
 </BaseLayout>

@@ -10,6 +10,7 @@ type Props = {
   imageWidth?: number;
   imageHeight?: number;
   type?: 'website' | 'article';
+  noindex?: boolean;
 };
 
 const {
@@ -21,6 +22,7 @@ const {
   imageWidth,
   imageHeight,
   type = 'website',
+  noindex = false,
 } = Astro.props;
 
 const pageTitle = title.includes('Eric Qiu') ? title : `${title} | Eric Qiu Photos`;
@@ -29,6 +31,7 @@ const imageUrl = absoluteUrl(image);
 ---
 
 <title>{pageTitle}</title>
+{noindex && <meta name="robots" content="noindex" />}
 <meta name="description" content={description} />
 <meta name="author" content="Eric Qiu" />
 <meta name="copyright" content={`Copyright ${new Date().getFullYear()} Eric Qiu. All rights reserved.`} />

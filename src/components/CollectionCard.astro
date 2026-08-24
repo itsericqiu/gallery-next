@@ -17,7 +17,7 @@ const coverImage = await photoImage(cover, 'grid');
   <img
     src={coverImage.src}
     srcset={coverImage.srcset}
-    alt={`Open ${collection.title}`}
+    alt={cover.alt}
     width={coverImage.width}
     height={coverImage.height}
     sizes={collectionCardSizes()}
