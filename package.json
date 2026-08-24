@@ -10,7 +10,7 @@
     "icons": "node scripts/generate-icons.mjs",
     "og-image": "node scripts/generate-og-image.mjs",
     "add-photo": "node scripts/add-photo.mjs",
-    "resize-all": "find src/assets/photos -name '*.jpg' -exec sips -Z 4000 {} \\;"
+    "normalize-photos": "node scripts/normalize-photos.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

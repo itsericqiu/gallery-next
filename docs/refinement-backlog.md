@@ -10,7 +10,10 @@ Notes captured after the large refinement pass that touched theme, navigation, g
 
 ## Deferred Items
 
-- C7: Add build-time photo ID validation so every `coverPhotoId` and every `photoIds[]` entry in `collections.ts` must exist in `photos.ts`.
+_Last verified: 2026-08-24 (full-site audit)._
+
+- ~~C7~~ Shipped: `validateCollections()` covers photo-ID references, `validatePhotos()` covers entry/metadata drift and missing alt, and `validateSeriesTags()` covers tag/series-list sync — all fail the build.
+- Re-export `spain-002` and `iceland-037` from their true originals (the committed files are 810x1080 / 720x1080 screen-res exports), then run `npm run normalize-photos`.
 - A2: Decide whether figcaption metadata should be visually de-emphasized, or whether photo IDs should become copy-link permalinks. Lean: visually de-emphasize only.
 - R5: Review landscape photo detail pages to see whether the fixed 240-320px aside feels cramped; only add a landscape-specific layout if the issue is visible.
 - C8: Consider changing the font stack from Avenir to `system-ui` for cross-platform consistency. Likely skip unless there is a clear reason.

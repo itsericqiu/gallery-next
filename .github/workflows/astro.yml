@@ -73,8 +73,7 @@ jobs:
           key: astro-images-${{ runner.os }}-${{ hashFiles('src/assets/**') }}
           restore-keys: astro-images-${{ runner.os }}-
       - name: Build with Astro
-        run: |
-          ${{ steps.detect-package-manager.outputs.runner }} astro build
+        run: npm run build
         working-directory: ${{ env.BUILD_PATH }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

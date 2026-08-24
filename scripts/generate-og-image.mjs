@@ -161,7 +161,7 @@ async function generateTextOverlay() {
                       textTransform: "uppercase",
                       marginBottom: "18px",
                     },
-                    children: "Photography Archive",
+                    children: "Photo Archive",
                   },
                 },
                 {
@@ -190,7 +190,7 @@ async function generateTextOverlay() {
                       letterSpacing: "0.04em",
                       marginBottom: "24px",
                     },
-                    children: "places \u00b7 weather \u00b7 city light \u00b7 small scenes",
+                    children: "cities \u00b7 weather \u00b7 buildings \u00b7 water",
                   },
                 },
                 {
