@@ -25,31 +25,33 @@ type PhotoTuple = [
   tags: string[],
 ];
 
+// Entries order is editorial: it drives the Archive page, each place page, the
+// lightbox sequence, and photo-page prev/next. New photos go at the end of
+// their place's block, not the end of the array.
 const entries: PhotoTuple[] = [
-  ['misc-061', undefined, 'Misc/eric-qiu-gallery-61.jpg', 2249, 4000, ['cities', 'built', 'details']],
-  ['misc-058', undefined, 'Misc/eric-qiu-gallery-58.jpg', 6000, 4000, ['landscapes', 'waterlines', 'weather']],
-  ['misc-059', undefined, 'Misc/eric-qiu-gallery-59.jpg', 5775, 3850, ['landscapes', 'weather']],
-  ['misc-053', undefined, 'Misc/eric-qiu-gallery-53.jpg', 4000, 6000, ['in-between']],
-  ['misc-047', undefined, 'Misc/eric-qiu-gallery-47.jpg', 2933, 3911, ['cities', 'in-between']],
+  // Spain — Seville, then Granada, then Barcelona (city grouping partly
+  // inferred from captions; correct from memory if a photo is misfiled)
   ['spain-014', 'Spain', 'Spain/eric-qiu-gallery-14.jpg', 6000, 4000, ['cities', 'built']],
-  // 810x1080 screen-res export on disk — replace with a 4000px re-export when the original turns up
-  ['spain-002', 'Spain', 'Spain/eric-qiu-gallery-02.jpg', 810, 1080, ['landscapes', 'built']],
-  ['spain-003', 'Spain', 'Spain/eric-qiu-gallery-03.jpg', 7414, 5561, ['landscapes', 'built', 'weather']],
-  ['spain-017', 'Spain', 'Spain/eric-qiu-gallery-17.jpg', 3642, 5463, ['built', 'details']],
-  ['spain-013', 'Spain', 'Spain/eric-qiu-gallery-13.jpg', 3791, 5686, ['cities', 'built']],
-  ['spain-007', 'Spain', 'Spain/eric-qiu-gallery-07.jpg', 6000, 4000, ['cities', 'built', 'weather']],
-  ['spain-012', 'Spain', 'Spain/eric-qiu-gallery-12.jpg', 3773, 5660, ['built', 'weather']],
-  ['spain-004', 'Spain', 'Spain/eric-qiu-gallery-04.jpg', 4488, 7979, ['built', 'details']],
-  ['spain-010', 'Spain', 'Spain/eric-qiu-gallery-10.jpg', 6000, 4000, ['cities', 'built', 'weather']],
-  ['spain-011', 'Spain', 'Spain/eric-qiu-gallery-11.jpg', 3874, 5811, ['cities', 'built', 'weather']],
-  ['spain-005', 'Spain', 'Spain/eric-qiu-gallery-05.jpg', 6048, 8064, ['landscapes', 'built']],
-  ['spain-020', 'Spain', 'Spain/eric-qiu-gallery-20.jpg', 3024, 4032, ['built', 'in-between']],
+  ['spain-013', 'Spain', 'Spain/eric-qiu-gallery-13.jpg', 3791, 5686, ['cities']],
   ['spain-009', 'Spain', 'Spain/eric-qiu-gallery-09.jpg', 3984, 5976, ['built', 'in-between']],
+  ['spain-007', 'Spain', 'Spain/eric-qiu-gallery-07.jpg', 6000, 4000, ['cities', 'built', 'weather']],
+  ['spain-010', 'Spain', 'Spain/eric-qiu-gallery-10.jpg', 6000, 4000, ['cities', 'weather']],
+  ['spain-011', 'Spain', 'Spain/eric-qiu-gallery-11.jpg', 3874, 5811, ['cities', 'weather']],
+  ['spain-012', 'Spain', 'Spain/eric-qiu-gallery-12.jpg', 3773, 5660, ['built', 'weather']],
+  ['spain-017', 'Spain', 'Spain/eric-qiu-gallery-17.jpg', 3642, 5463, ['built', 'details']],
+  ['spain-019', 'Spain', 'Spain/eric-qiu-gallery-19.jpg', 3795, 5693, ['built', 'details']],
+  // 810x1080 screen-res export on disk — replace with a 4000px re-export when the original turns up
+  ['spain-002', 'Spain', 'Spain/eric-qiu-gallery-02.jpg', 810, 1080, ['landscapes']],
+  ['spain-005', 'Spain', 'Spain/eric-qiu-gallery-05.jpg', 6048, 8064, ['landscapes']],
+  ['spain-003', 'Spain', 'Spain/eric-qiu-gallery-03.jpg', 7414, 5561, ['landscapes', 'weather']],
+  ['spain-004', 'Spain', 'Spain/eric-qiu-gallery-04.jpg', 4488, 7979, ['built', 'details']],
   ['spain-023', 'Spain', 'Spain/eric-qiu-gallery-23.jpg', 8064, 6048, ['built', 'details']],
   ['spain-022', 'Spain', 'Spain/eric-qiu-gallery-22.jpg', 1924, 2886, ['built', 'details']],
-  ['spain-019', 'Spain', 'Spain/eric-qiu-gallery-19.jpg', 3795, 5693, ['built', 'details']],
-  ['spain-025', 'Spain', 'Spain/eric-qiu-gallery-25.jpg', 6048, 8064, ['built', 'details']],
+  ['spain-020', 'Spain', 'Spain/eric-qiu-gallery-20.jpg', 3024, 4032, ['built', 'in-between']],
   ['spain-024', 'Spain', 'Spain/eric-qiu-gallery-24.jpg', 3024, 4032, ['built', 'details']],
+  ['spain-025', 'Spain', 'Spain/eric-qiu-gallery-25.jpg', 6048, 8064, ['built', 'details']],
+  ['misc-047', undefined, 'Misc/eric-qiu-gallery-47.jpg', 2933, 3911, ['cities', 'in-between']],
+  ['misc-061', undefined, 'Misc/eric-qiu-gallery-61.jpg', 2249, 4000, ['cities']],
   ['japan-051', 'Japan', 'Japan/eric-qiu-gallery-51.jpg', 3941, 5912, ['cities']],
   ['japan-052', 'Japan', 'Japan/eric-qiu-gallery-52.jpg', 7485, 11227, ['cities', 'weather', 'in-between']],
   ['london-029', 'London', 'London/eric-qiu-gallery-29.jpg', 3134, 4701, ['cities', 'built']],
@@ -57,24 +59,28 @@ const entries: PhotoTuple[] = [
   ['london-027', 'London', 'London/eric-qiu-gallery-27.jpg', 2932, 3910, ['cities', 'weather']],
   ['london-031', 'London', 'London/eric-qiu-gallery-31.jpg', 3007, 4008, ['cities', 'in-between']],
   ['london-030', 'London', 'London/eric-qiu-gallery-30.jpg', 3218, 4827, ['cities', 'built']],
+  ['misc-053', undefined, 'Misc/eric-qiu-gallery-53.jpg', 4000, 6000, ['in-between']],
   ['vietnam-057', 'Vietnam', 'Vietnam/eric-qiu-gallery-57.jpg', 6048, 8064, ['landscapes', 'waterlines', 'in-between']],
   ['vietnam-056', 'Vietnam', 'Vietnam/eric-qiu-gallery-56.jpg', 8064, 6048, ['landscapes', 'waterlines', 'weather']],
   ['vietnam-055', 'Vietnam', 'Vietnam/eric-qiu-gallery-55.jpg', 3024, 4032, ['landscapes', 'waterlines']],
   ['new-york-city-049', 'New York City', 'New York City/eric-qiu-gallery-49.jpg', 6000, 4000, ['cities', 'waterlines']],
   ['new-york-city-048', 'New York City', 'New York City/eric-qiu-gallery-48.jpg', 4000, 6000, ['cities', 'waterlines', 'weather']],
+  ['misc-058', undefined, 'Misc/eric-qiu-gallery-58.jpg', 6000, 4000, ['landscapes', 'waterlines', 'weather']],
+  ['misc-059', undefined, 'Misc/eric-qiu-gallery-59.jpg', 5775, 3850, ['landscapes', 'weather']],
+  // Iceland — wildlife beat grouped at the end; iceland-033 closes the Archive
   ['iceland-038', 'Iceland', 'Iceland/eric-qiu-gallery-38.jpg', 3173, 4760, ['landscapes', 'waterlines', 'weather']],
   ['iceland-039', 'Iceland', 'Iceland/eric-qiu-gallery-39.jpg', 4000, 6000, ['landscapes', 'weather', 'in-between']],
   ['iceland-042', 'Iceland', 'Iceland/eric-qiu-gallery-42.jpg', 6000, 4000, ['landscapes', 'waterlines']],
   ['iceland-040', 'Iceland', 'Iceland/eric-qiu-gallery-40.jpg', 6000, 4000, ['landscapes', 'built', 'weather']],
-  ['iceland-045', 'Iceland', 'Iceland/eric-qiu-gallery-45.jpg', 3086, 4629, ['landscapes', 'waterlines']],
   ['iceland-044', 'Iceland', 'Iceland/eric-qiu-gallery-44.jpg', 6000, 4000, ['landscapes', 'weather']],
-  ['iceland-046', 'Iceland', 'Iceland/eric-qiu-gallery-46.jpg', 4000, 3091, ['landscapes', 'waterlines', 'details']],
   ['iceland-034', 'Iceland', 'Iceland/eric-qiu-gallery-34.jpg', 4241, 5655, ['landscapes', 'in-between']],
   ['iceland-035', 'Iceland', 'Iceland/eric-qiu-gallery-35.jpg', 3024, 4032, ['landscapes', 'waterlines', 'weather']],
   // 720x1080 screen-res export on disk — replace with a 4000px re-export when the original turns up
   ['iceland-037', 'Iceland', 'Iceland/eric-qiu-gallery-37.jpg', 720, 1080, ['landscapes']],
   ['iceland-032', 'Iceland', 'Iceland/eric-qiu-gallery-32.jpg', 3262, 4893, ['landscapes', 'waterlines', 'weather']],
-  ['iceland-033', 'Iceland', 'Iceland/eric-qiu-gallery-33.jpg', 3969, 2646, ['landscapes', 'waterlines', 'in-between']],
+  ['iceland-046', 'Iceland', 'Iceland/eric-qiu-gallery-46.jpg', 4000, 3091, ['landscapes', 'waterlines']],
+  ['iceland-045', 'Iceland', 'Iceland/eric-qiu-gallery-45.jpg', 3086, 4629, ['landscapes', 'waterlines']],
+  ['iceland-033', 'Iceland', 'Iceland/eric-qiu-gallery-33.jpg', 3969, 2646, ['landscapes', 'waterlines']],
 ];
 
 const metadata: Record<string, Pick<Photo, 'title' | 'caption' | 'alt'>> = {
@@ -329,6 +335,34 @@ export const photos: Photo[] = entries.map(([id, place, key, width, height, tags
     key,
   },
 }));
+
+function validatePhotos() {
+  const problems: string[] = [];
+  const entryIds = new Set(entries.map(([id]) => id));
+
+  for (const [id] of entries) {
+    const meta = metadata[id];
+    if (!meta) {
+      problems.push(`${id}: no metadata entry (photo would ship without title, caption, or real alt)`);
+      continue;
+    }
+    if (!meta.alt || meta.alt.trim() === '' || meta.alt.trim() === 'TODO') {
+      problems.push(`${id}: missing alt text`);
+    }
+  }
+
+  for (const id of Object.keys(metadata)) {
+    if (!entryIds.has(id)) {
+      problems.push(`${id}: metadata has no matching entry (typo'd or removed id?)`);
+    }
+  }
+
+  if (problems.length > 0) {
+    throw new Error(`photos.ts validation failed:\n${problems.join('\n')}`);
+  }
+}
+
+validatePhotos();
 
 export const photoById = new Map(photos.map((photo) => [photo.id, photo]));
 

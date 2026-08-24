@@ -32,12 +32,12 @@ const seriesPhotoIds = {
     'london-027',
     'london-031',
     'london-030',
+    'misc-061',
     'spain-014',
     'spain-007',
     'spain-010',
     'spain-011',
     'spain-013',
-    'misc-061',
   ],
   landscapes: [
     'iceland-044',
@@ -69,21 +69,14 @@ const seriesPhotoIds = {
     'spain-022',
     'spain-017',
     'spain-014',
-    'spain-013',
     'spain-007',
     'spain-012',
-    'spain-010',
-    'spain-011',
     'spain-019',
     'spain-020',
     'spain-009',
     'london-029',
     'london-028',
     'london-030',
-    'misc-061',
-    'spain-003',
-    'spain-005',
-    'spain-002',
     'iceland-040',
   ],
   waterlines: [
@@ -128,8 +121,6 @@ const seriesPhotoIds = {
     'spain-022',
     'spain-019',
     'spain-017',
-    'misc-061',
-    'iceland-046',
   ],
   inBetween: [
     'misc-053',
@@ -138,7 +129,6 @@ const seriesPhotoIds = {
     'london-031',
     'iceland-034',
     'iceland-039',
-    'iceland-033',
     'vietnam-057',
     'spain-020',
     'spain-009',
@@ -148,7 +138,7 @@ const seriesPhotoIds = {
 export const collections: Collection[] = [
   {
     id: 'selected',
-    title: 'Selected',
+    title: 'Favorites',
     type: 'selected',
     slug: '/',
     description: 'A few favorites from trips and walks.',
@@ -168,8 +158,7 @@ export const collections: Collection[] = [
       'misc-058',
       'spain-025',
     ],
-    seoTitle: 'Photos by Eric Qiu',
-    seoDescription: 'Photos of places, weather, city light, and ordinary scenes by Eric Qiu.',
+    seoDescription: 'Photos of cities, weather, buildings, and water by Eric Qiu.',
   },
   {
     id: 'archive',
@@ -240,7 +229,7 @@ export const collections: Collection[] = [
     type: 'series',
     slug: '/series/cities/',
     description: 'Streets and skylines.',
-    coverPhotoId: 'japan-052',
+    coverPhotoId: 'misc-047',
     photoIds: seriesPhotoIds.cities,
   },
   {
@@ -249,7 +238,7 @@ export const collections: Collection[] = [
     type: 'series',
     slug: '/series/landscapes/',
     description: 'Mountains, coastlines, open road.',
-    coverPhotoId: 'iceland-044',
+    coverPhotoId: 'misc-059',
     photoIds: seriesPhotoIds.landscapes,
   },
   {
@@ -267,7 +256,7 @@ export const collections: Collection[] = [
     type: 'series',
     slug: '/series/waterlines/',
     description: 'Rivers, harbors, coasts, reflections.',
-    coverPhotoId: 'vietnam-056',
+    coverPhotoId: 'iceland-042',
     photoIds: seriesPhotoIds.waterlines,
   },
   {
@@ -284,7 +273,7 @@ export const collections: Collection[] = [
     title: 'Details',
     type: 'series',
     slug: '/series/details/',
-    description: 'Close-ups of tile, stone, and carved surfaces.',
+    description: 'Tile, stone, and carved surfaces.',
     coverPhotoId: 'spain-024',
     photoIds: seriesPhotoIds.details,
   },
@@ -320,7 +309,35 @@ function validateCollections() {
   }
 }
 
+// Series membership is stored twice — tags in photos.ts and the lists above.
+// Fail the build if the two ever drift.
+function validateSeriesTags() {
+  const tagBySlugSegment: Record<string, string> = { 'built-places': 'built' };
+  const mismatches: string[] = [];
+
+  for (const collection of collections.filter((candidate) => candidate.type === 'series')) {
+    const segment = collection.slug.split('/').filter(Boolean).pop() ?? '';
+    const tag = tagBySlugSegment[segment] ?? segment;
+    const inList = new Set(collection.photoIds);
+
+    for (const photo of photos) {
+      const tagged = photo.tags.includes(tag);
+      if (tagged && !inList.has(photo.id)) {
+        mismatches.push(`${photo.id} has tag '${tag}' but is missing from ${collection.id}`);
+      }
+      if (!tagged && inList.has(photo.id)) {
+        mismatches.push(`${photo.id} is in ${collection.id} but lacks tag '${tag}'`);
+      }
+    }
+  }
+
+  if (mismatches.length > 0) {
+    throw new Error(`Series tags and membership lists disagree:\n${mismatches.join('\n')}`);
+  }
+}
+
 validateCollections();
+validateSeriesTags();
 
 export function getCollection(id: string): Collection {
   const collection = collections.find((candidate) => candidate.id === id);
