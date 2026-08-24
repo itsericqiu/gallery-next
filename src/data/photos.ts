@@ -32,7 +32,8 @@ const entries: PhotoTuple[] = [
   ['misc-053', undefined, 'Misc/eric-qiu-gallery-53.jpg', 4000, 6000, ['in-between']],
   ['misc-047', undefined, 'Misc/eric-qiu-gallery-47.jpg', 2933, 3911, ['cities', 'in-between']],
   ['spain-014', 'Spain', 'Spain/eric-qiu-gallery-14.jpg', 6000, 4000, ['cities', 'built']],
-  ['spain-002', 'Spain', 'Spain/eric-qiu-gallery-02.jpg', 6035, 8047, ['landscapes', 'built']],
+  // 810x1080 screen-res export on disk — replace with a 4000px re-export when the original turns up
+  ['spain-002', 'Spain', 'Spain/eric-qiu-gallery-02.jpg', 810, 1080, ['landscapes', 'built']],
   ['spain-003', 'Spain', 'Spain/eric-qiu-gallery-03.jpg', 7414, 5561, ['landscapes', 'built', 'weather']],
   ['spain-017', 'Spain', 'Spain/eric-qiu-gallery-17.jpg', 3642, 5463, ['built', 'details']],
   ['spain-013', 'Spain', 'Spain/eric-qiu-gallery-13.jpg', 3791, 5686, ['cities', 'built']],
@@ -70,7 +71,8 @@ const entries: PhotoTuple[] = [
   ['iceland-046', 'Iceland', 'Iceland/eric-qiu-gallery-46.jpg', 4000, 3091, ['landscapes', 'waterlines', 'details']],
   ['iceland-034', 'Iceland', 'Iceland/eric-qiu-gallery-34.jpg', 4241, 5655, ['landscapes', 'in-between']],
   ['iceland-035', 'Iceland', 'Iceland/eric-qiu-gallery-35.jpg', 3024, 4032, ['landscapes', 'waterlines', 'weather']],
-  ['iceland-037', 'Iceland', 'Iceland/eric-qiu-gallery-37.jpg', 5931, 8897, ['landscapes']],
+  // 720x1080 screen-res export on disk — replace with a 4000px re-export when the original turns up
+  ['iceland-037', 'Iceland', 'Iceland/eric-qiu-gallery-37.jpg', 720, 1080, ['landscapes']],
   ['iceland-032', 'Iceland', 'Iceland/eric-qiu-gallery-32.jpg', 3262, 4893, ['landscapes', 'waterlines', 'weather']],
   ['iceland-033', 'Iceland', 'Iceland/eric-qiu-gallery-33.jpg', 3969, 2646, ['landscapes', 'waterlines', 'in-between']],
 ];

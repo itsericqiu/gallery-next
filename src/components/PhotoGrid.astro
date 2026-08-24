@@ -168,31 +168,38 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     let touchStartX = 0;
     let touchStartY = 0;
     let renderToken = 0;
+    const lightboxSizes = imageEl.getAttribute('sizes') || '100vw';
 
     function wrappedIndex(index: number): number {
       return (index + items.length) % items.length;
     }
 
     function prefetchAdjacent(index: number) {
-      // Preload ±3 photos for aggressive skipping
-      const offsets = [-3, -2, -1, 1, 2, 3];
-      
+      // Browsers without imagesrcset on preload links would fetch the raw href
+      // instead of a responsive rung — skip preloading there entirely.
+      if (!('imageSrcset' in HTMLLinkElement.prototype)) return;
+
+      const offsets = [-1, 1];
+
       offsets.forEach(offset => {
         const targetIdx = wrappedIndex(index + offset);
         const item = items[targetIdx];
         if (!item) return;
-        
+
         // Skip if already preloaded (unique ID prevents duplicates)
         const preloadId = `preload-${item.id}`;
         if (document.getElementById(preloadId)) return;
-        
+
         const link = document.createElement('link');
         link.id = preloadId;
         link.rel = 'preload';
         link.as = 'image';
         link.href = item.src;
         link.imageSrcset = item.srcset;
-        
+        // Without imageSizes the preload evaluates at 100vw and picks a larger
+        // rung than the dialog img will actually use.
+        link.imageSizes = lightboxSizes;
+
         document.head.appendChild(link);
       });
     }
@@ -263,8 +270,9 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     if (!('ontouchstart' in window)) {
       const preloadItem = (item: LightboxItem) => {
         const img = new Image();
-        img.src = item.src;
+        img.sizes = lightboxSizes;
         img.srcset = item.srcset;
+        img.src = item.src;
         img.decoding = 'async';
       };
 

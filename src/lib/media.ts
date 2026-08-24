@@ -1,6 +1,8 @@
+import path from 'node:path';
 import type { Photo } from '@/data/photos';
 import { getImage } from 'astro:assets';
 import type { GetImageResult, ImageOutputFormat, ImageQuality } from 'astro';
+import sharp from 'sharp';
 import { photoAsset } from './photo-assets';
 
 export type RenderedPhotoImage = {
@@ -25,24 +27,35 @@ export async function photoImage(photo: Photo, variant: 'grid' | 'detail'): Prom
   };
 }
 
-export async function photoPlaceholder(photo: Photo): Promise<string> {
-  const image = await getPhotoImage(photo, {
-    format: 'webp',
-    quality: 35,
-    width: 64,
-  });
+const placeholderCache = new Map<string, Promise<string>>();
 
-  return image.src;
+export function photoPlaceholder(photo: Photo): Promise<string> {
+  const cached = placeholderCache.get(photo.asset.key);
+  if (cached) return cached;
+
+  // Inline data URI (not a getImage file URL): placeholders as separate requests
+  // are lowest-priority CSS fetches and starve behind photos on slow connections.
+  const promise = sharp(path.join(process.cwd(), 'src/assets/photos', photo.asset.key))
+    .resize({ width: 64 })
+    .webp({ quality: 35 })
+    .toBuffer()
+    .then((buffer) => `data:image/webp;base64,${buffer.toString('base64')}`);
+
+  placeholderCache.set(photo.asset.key, promise);
+  return promise;
 }
 
 function imageOptions(
   photo: Photo,
   variant: 'grid' | 'detail',
-): { widths: number[]; format: ImageOutputFormat; quality: ImageQuality } {
+): { width: number; widths: number[]; format: ImageOutputFormat; quality: ImageQuality } {
+  // width caps the emitted fallback src at the top srcset rung; without it Astro
+  // also generates a full-resolution transform per photo (80% of dist).
   if (variant === 'detail') {
     return {
       format: 'webp',
       quality: 'high',
+      width: Math.min(photo.width, 2000),
       widths: boundedWidths(photo.width, [1200, 2000]),
     };
   }
@@ -50,7 +63,8 @@ function imageOptions(
   return {
     format: 'webp',
     quality: 'mid',
-    widths: boundedWidths(photo.width, [480, 960]),
+    width: Math.min(photo.width, 960),
+    widths: boundedWidths(photo.width, [480, 640, 960]),
   };
 }
 

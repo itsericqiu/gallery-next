@@ -1,6 +1,7 @@
 import type { Collection } from '@/data/collections';
 import { getPhoto, type Photo } from '@/data/photos';
-import { photoImage } from './media';
+import { getImage } from 'astro:assets';
+import { photoAsset } from './photo-assets';
 
 export type SeoImage = {
   src: string;
@@ -10,12 +11,25 @@ export type SeoImage = {
 };
 
 export async function photoSeoImage(photo: Photo): Promise<SeoImage> {
-  const image = await photoImage(photo, 'detail');
+  // Dedicated share transform: chat/social scrapers cap card images around 5MB
+  // and some still mishandle webp, so serve a ~1200px jpeg with its real dims.
+  const targetWidth = Math.min(photo.width, 1200);
+  const image = await getImage({
+    src: photoAsset(photo.asset.key),
+    width: targetWidth,
+    format: 'jpeg',
+    quality: 'mid',
+  });
+
+  const width = Number(image.attributes.width ?? targetWidth);
+  const height = Number(
+    image.attributes.height ?? Math.round(targetWidth * (photo.height / photo.width)),
+  );
 
   return {
     src: image.src,
-    width: image.width,
-    height: image.height,
+    width,
+    height,
     alt: photo.alt,
   };
 }
