@@ -142,6 +142,9 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     const dialog = dataEl?.nextElementSibling;
     if (!(dataEl instanceof HTMLScriptElement)) return;
     if (!(dialog instanceof HTMLDialogElement)) return;
+    // No showModal (pre-2022 engines): leave tiles as plain links to the photo
+    // pages instead of hijacking clicks into a dialog that can never open.
+    if (typeof dialog.showModal !== 'function') return;
 
     const dialogEl = dialog;
 
@@ -231,10 +234,15 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
 
     function open(index: number, source: HTMLElement) {
       opener = source;
-      render(index).then(() => {
-        dialogEl.showModal();
-        closeButtonEl.focus();
-      });
+      render(index)
+        .then(() => {
+          dialogEl.showModal();
+          closeButtonEl.focus();
+        })
+        .catch(() => {
+          const item = items[wrappedIndex(index)];
+          if (item) window.location.href = item.href;
+        });
       prefetchAdjacent(index);
     }
 

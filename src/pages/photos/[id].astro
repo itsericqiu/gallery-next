@@ -86,7 +86,9 @@ const placeholder = await photoPlaceholder(photo);
     const dialog = document.querySelector<HTMLDialogElement>('.photo-lightbox');
     const close = document.querySelector<HTMLButtonElement>('.photo-lightbox__close');
 
-    expand?.addEventListener('click', () => dialog?.showModal());
+    expand?.addEventListener('click', () => {
+      if (typeof dialog?.showModal === 'function') dialog.showModal();
+    });
     close?.addEventListener('click', () => dialog?.close());
     dialog?.addEventListener('click', (event) => {
       const nonCloseSelectors = ['img', 'button', '[class*="close"]'];

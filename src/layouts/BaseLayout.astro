@@ -68,14 +68,22 @@ const { title, description, path, image, imageAlt, imageWidth, imageHeight, type
           : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         apply(initial);
 
-        // System change listener (only follows system if user hasn't set explicit)
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // System change listener (only follows system if user hasn't set explicit).
+        // Guarded: MediaQueryList only gained addEventListener in 2020-era engines,
+        // and an uncaught throw here would leave window.__theme unassigned.
+        var systemQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        var systemChange = function(e) {
           var s = null;
           try { s = localStorage.getItem('theme'); } catch (err) {}
           if (s !== 'dark' && s !== 'light') {
             apply(e.matches ? 'dark' : 'light');
           }
-        });
+        };
+        try {
+          systemQuery.addEventListener('change', systemChange);
+        } catch (err) {
+          if (systemQuery.addListener) systemQuery.addListener(systemChange);
+        }
 
         window.__theme = {
           get: getEffective,

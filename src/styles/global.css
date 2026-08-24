@@ -174,8 +174,21 @@ h1 {
   grid-template-columns: repeat(3, 1fr);
 }
 
+/*
+ * Self-expiring hide: if the masonry module never executes (legacy parse
+ * error, content-blocker, CSP), the grid reveals as the CSS fallback after
+ * 1.5s instead of staying hidden forever. The animation-delay is load-bearing —
+ * reduced-motion overrides must never zero animation-delay.
+ */
 .js .photo-grid:not(.is-packed) {
-  visibility: hidden;
+  opacity: 0;
+  animation: grid-reveal 0s 1.5s forwards;
+}
+
+@keyframes grid-reveal {
+  to {
+    opacity: 1;
+  }
 }
 
 .photo-grid.is-packed {
@@ -364,11 +377,13 @@ figcaption,
 .photo-lightbox {
   background: transparent;
   border: 0;
+  height: 100vh;
   height: 100dvh;
   inset: 0;
   margin: 0;
   max-height: none;
   max-width: none;
+  min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
   overscroll-behavior: contain;
@@ -423,11 +438,13 @@ figcaption,
   background: transparent;
   border: 0;
   color: #f3f0ea;
+  height: 100vh;
   height: 100dvh;
   inset: 0;
   margin: 0;
   max-height: none;
   max-width: none;
+  min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
   overscroll-behavior: contain;
@@ -444,6 +461,7 @@ figcaption,
 .collection-lightbox__stage {
   align-items: center;
   display: flex;
+  height: calc(100vh - 64px - 24px - 48px);
   height: calc(100dvh - 64px - 24px - 48px);
   justify-content: center;
   margin-inline: auto;
@@ -630,6 +648,7 @@ figcaption {
   }
 
   .collection-lightbox__stage {
+    height: calc(100vh - 64px - 16px - 88px);
     height: calc(100dvh - 64px - 16px - 88px);
     padding-top: 64px;
   }
