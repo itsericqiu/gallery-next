@@ -22,6 +22,9 @@ const renderedPhotos = await Promise.all(
 const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
   id: photo.id,
   alt: photo.alt,
+  title: photo.title ?? null,
+  place: photo.place ?? null,
+  caption: photo.caption ?? null,
   href,
   src: lightboxImage.src,
   srcset: lightboxImage.srcset,
@@ -62,8 +65,12 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     <img class="collection-lightbox__image" alt="" sizes={detailSizes()} decoding="async" />
   </div>
   <button class="collection-lightbox__nav collection-lightbox__nav--next" type="button" aria-label="Next photo">→</button>
-  <aside class="collection-lightbox__meta" aria-live="polite">
-    <p class="collection-lightbox__count"></p>
+  <aside class="collection-lightbox__meta">
+    <div class="collection-lightbox__live" aria-live="polite">
+      <p class="collection-lightbox__title"></p>
+      <p class="collection-lightbox__count"></p>
+    </div>
+    <p class="collection-lightbox__caption"></p>
     <a class="collection-lightbox__photo-link" href="">View photo page</a>
   </aside>
 </dialog>
@@ -74,6 +81,9 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
   type LightboxItem = {
     id: string;
     alt: string;
+    title: string | null;
+    place: string | null;
+    caption: string | null;
     href: string;
     src: string;
     srcset: string;
@@ -156,12 +166,16 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     const prevButton = dialog.querySelector<HTMLButtonElement>('.collection-lightbox__nav--prev');
     const nextButton = dialog.querySelector<HTMLButtonElement>('.collection-lightbox__nav--next');
     const count = dialog.querySelector<HTMLElement>('.collection-lightbox__count');
+    const title = dialog.querySelector<HTMLElement>('.collection-lightbox__title');
+    const caption = dialog.querySelector<HTMLElement>('.collection-lightbox__caption');
     const pageLink = dialog.querySelector<HTMLAnchorElement>('.collection-lightbox__photo-link');
-    if (!image || !closeButton || !prevButton || !nextButton || !count || !pageLink) return;
+    if (!image || !closeButton || !prevButton || !nextButton || !count || !title || !caption || !pageLink) return;
 
     const imageEl = image;
     const closeButtonEl = closeButton;
     const countEl = count;
+    const titleEl = title;
+    const captionEl = caption;
     const pageLinkEl = pageLink;
 
     grid.dataset.lightboxReady = 'true';
@@ -170,7 +184,10 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     let opener: HTMLElement | null = null;
     let touchStartX = 0;
     let touchStartY = 0;
+    let touchMoved = false;
+    let multiTouch = false;
     let renderToken = 0;
+    let previousBodyOverflow = '';
     const lightboxSizes = imageEl.getAttribute('sizes') || '100vw';
 
     function wrappedIndex(index: number): number {
@@ -216,13 +233,27 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
 
       // Update UI immediately for snappier feel
       activeIndex = targetIndex;
+      dialogEl.dataset.loading = 'true';
+      const clearLoading = () => {
+        // renderToken guard: a stale image's load must not clear a newer render's state
+        if (token === renderToken) delete dialogEl.dataset.loading;
+      };
+      imageEl.addEventListener('load', clearLoading, { once: true });
+      imageEl.addEventListener('error', clearLoading, { once: true });
       imageEl.src = item.src;
       imageEl.srcset = item.srcset;
       imageEl.width = item.width;
       imageEl.height = item.height;
       imageEl.alt = item.alt;
       imageEl.decoding = 'async'; // Let browser decode in background
-      
+      if (imageEl.complete && imageEl.naturalWidth > 0) clearLoading();
+
+      titleEl.textContent = item.title
+        ? item.place
+          ? `${item.title} — ${item.place}`
+          : item.title
+        : (item.place ?? '');
+      captionEl.textContent = item.caption ?? '';
       countEl.textContent = `${activeIndex + 1} / ${items.length}`;
       pageLinkEl.href = item.href;
 
@@ -234,12 +265,15 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
 
     function open(index: number, source: HTMLElement) {
       opener = source;
+      previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
       render(index)
         .then(() => {
           dialogEl.showModal();
           closeButtonEl.focus();
         })
         .catch(() => {
+          document.body.style.overflow = previousBodyOverflow || '';
           const item = items[wrappedIndex(index)];
           if (item) window.location.href = item.href;
         });
@@ -298,6 +332,13 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     }
 
     dialogEl.addEventListener('click', (event) => {
+      // A swipe that ends over the stage still fires a synthetic click — don't
+      // treat it as a close tap.
+      if (touchMoved) {
+        touchMoved = false;
+        return;
+      }
+
       const nonCloseSelectors = [
         'img',
         'button',
@@ -322,6 +363,7 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     });
 
     dialogEl.addEventListener('close', () => {
+      document.body.style.overflow = previousBodyOverflow || '';
       opener?.focus({ preventScroll: true });
       opener = null;
     });
@@ -337,16 +379,31 @@ const lightboxItems = renderedPhotos.map(({ photo, lightboxImage, href }) => ({
     });
 
     dialogEl.addEventListener('touchstart', (event) => {
+      // Any second finger marks the whole gesture as multi-touch (a pinch must
+      // never fire swipe navigation — each finger's touchend looks like a swipe).
+      if (event.touches.length > 1) {
+        multiTouch = true;
+        return;
+      }
+      multiTouch = false;
+      touchMoved = false;
       const touch = event.changedTouches[0];
       touchStartX = touch.clientX;
       touchStartY = touch.clientY;
     }, { passive: true });
 
+    dialogEl.addEventListener('touchmove', (event) => {
+      if (event.touches.length > 1) multiTouch = true;
+      touchMoved = true;
+    }, { passive: true });
+
     dialogEl.addEventListener('touchend', (event) => {
+      if (event.touches.length > 0) return;
+      if (multiTouch) return;
       const touch = event.changedTouches[0];
       const dx = touch.clientX - touchStartX;
       const dy = touch.clientY - touchStartY;
-      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
       if (dx < 0) next();
       else previous();
     }, { passive: true });

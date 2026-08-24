@@ -86,10 +86,18 @@ const placeholder = await photoPlaceholder(photo);
     const dialog = document.querySelector<HTMLDialogElement>('.photo-lightbox');
     const close = document.querySelector<HTMLButtonElement>('.photo-lightbox__close');
 
+    let previousBodyOverflow = '';
+
     expand?.addEventListener('click', () => {
-      if (typeof dialog?.showModal === 'function') dialog.showModal();
+      if (typeof dialog?.showModal !== 'function') return;
+      previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      dialog.showModal();
     });
     close?.addEventListener('click', () => dialog?.close());
+    dialog?.addEventListener('close', () => {
+      document.body.style.overflow = previousBodyOverflow || '';
+    });
     dialog?.addEventListener('click', (event) => {
       const nonCloseSelectors = ['img', 'button', '[class*="close"]'];
 

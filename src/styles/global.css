@@ -388,14 +388,13 @@ figcaption,
   overflow: hidden;
   overscroll-behavior: contain;
   padding: 12px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
   position: fixed;
   width: 100vw;
   z-index: 0;
 }
 
 .photo-lightbox::backdrop {
-  background: rgba(12, 11, 10, 0.94);
+  background: rgba(12, 11, 10, 0.97);
 }
 
 .photo-lightbox img {
@@ -413,7 +412,7 @@ figcaption,
  * controls invisible in dark mode.
  */
 .photo-lightbox__close {
-  background: rgba(243, 240, 234, 0.08);
+  background: rgba(18, 17, 16, 0.92);
   border: 1px solid rgba(243, 240, 234, 0.24);
   color: #f3f0ea;
   cursor: pointer;
@@ -429,8 +428,11 @@ figcaption,
   z-index: 3;
 }
 
+/* Fixed light outline: the backdrop is fixed dark, so var(--ink) would be
+   invisible in light theme. */
 .photo-lightbox__close:focus-visible {
-  outline: none;
+  outline: 2px solid #f3f0ea;
+  outline-offset: 3px;
 }
 
 
@@ -449,13 +451,12 @@ figcaption,
   overflow: hidden;
   overscroll-behavior: contain;
   padding: 12px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
   position: fixed;
   width: 100vw;
 }
 
 .collection-lightbox::backdrop {
-  background: rgba(12, 11, 10, 0.94);
+  background: rgba(12, 11, 10, 0.97);
 }
 
 .collection-lightbox__stage {
@@ -469,9 +470,11 @@ figcaption,
   padding-top: 64px;
 }
 
+/* The img element hugs the visible photo (no forced height): letterbox taps
+   land on the stage div, which the click-to-close walker already handles. */
 .collection-lightbox__image {
   background: transparent;
-  height: 100%;
+  height: auto;
   max-height: 100%;
   max-width: 100%;
   object-fit: contain;
@@ -494,6 +497,11 @@ figcaption,
   z-index: 2;
 }
 
+.collection-lightbox__live {
+  display: grid;
+  gap: 2px;
+}
+
 .collection-lightbox__count,
 .collection-lightbox__photo-link {
   font-family: var(--mono);
@@ -510,23 +518,35 @@ figcaption,
 .collection-lightbox__title {
   color: #f3f0ea;
   font-family: var(--serif);
-  font-size: clamp(22px, 3vw, 34px);
+  font-size: clamp(15px, 1.6vw, 19px);
   font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.12;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
   margin: 0;
 }
 
+.collection-lightbox__caption {
+  color: rgba(243, 240, 234, 0.72);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .collection-lightbox__photo-link {
+  align-items: center;
   color: #f3f0ea;
+  display: inline-flex;
   justify-self: start;
-  margin-top: 4px;
+  min-height: 44px;
 }
 
 .collection-lightbox__close,
 .collection-lightbox__nav {
   align-items: center;
-  background: rgba(243, 240, 234, 0.08);
+  background: rgba(18, 17, 16, 0.92);
   border: 1px solid rgba(243, 240, 234, 0.24);
   color: #f3f0ea;
   cursor: pointer;
@@ -545,10 +565,13 @@ figcaption,
   z-index: 3;
 }
 
+/* Fixed light outline: the backdrop is fixed dark, so var(--ink) would be
+   invisible in light theme. */
 .collection-lightbox__close:focus-visible,
 .collection-lightbox__nav:focus-visible,
 .collection-lightbox__photo-link:focus-visible {
-  outline: none;
+  outline: 2px solid #f3f0ea;
+  outline-offset: 3px;
 }
 
 .collection-lightbox__close {
@@ -576,7 +599,7 @@ figcaption,
 
 .collection-lightbox__close:hover,
 .collection-lightbox__nav:hover {
-  background: rgba(243, 240, 234, 0.16);
+  background: rgba(58, 54, 48, 0.94);
   border-color: rgba(243, 240, 234, 0.42);
 }
 
@@ -644,17 +667,22 @@ figcaption {
 
   .collection-lightbox {
     padding: 8px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
+  /* Bottom reserve covers the meta stack (title + count + 44px link) above the
+     relocated arrows; re-derive if the meta contents change. */
   .collection-lightbox__stage {
-    height: calc(100vh - 64px - 16px - 88px);
-    height: calc(100dvh - 64px - 16px - 88px);
+    height: calc(100vh - 64px - 8px - 148px);
+    height: calc(100dvh - 64px - 8px - 148px);
     padding-top: 64px;
   }
 
+  .collection-lightbox__caption {
+    display: none;
+  }
+
   .collection-lightbox__meta {
-    bottom: 60px;
+    bottom: 68px;
     gap: 4px;
     left: 12px;
     right: 12px;
@@ -673,7 +701,7 @@ figcaption {
   }
 
   .collection-lightbox__nav {
-    bottom: 8px;
+    bottom: 16px;
     top: auto;
     transform: none;
   }
@@ -685,10 +713,29 @@ figcaption {
   .collection-lightbox__nav--next {
     right: 8px;
   }
+}
 
-  .collection-lightbox__close:focus-visible,
-  .collection-lightbox__nav:focus-visible {
-    outline: none;
+/* Phone landscape: reclaim the chrome reservations so rotating actually makes
+   the photo bigger; land after the width query so it wins on short screens. */
+@media (max-height: 480px) {
+  .collection-lightbox__stage {
+    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
+    padding-top: 0;
+  }
+
+  .collection-lightbox__caption,
+  .collection-lightbox__photo-link {
+    display: none;
+  }
+
+  .collection-lightbox__meta {
+    bottom: 8px;
+    gap: 2px;
+  }
+
+  .collection-lightbox__title {
+    font-size: 14px;
   }
 }
 
